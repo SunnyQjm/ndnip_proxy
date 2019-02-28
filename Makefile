@@ -136,6 +136,36 @@ is/fast:
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/build
 .PHONY : is/fast
 
+common/common.o: common/common.cpp.o
+
+.PHONY : common/common.o
+
+# target to build an object file
+common/common.cpp.o:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/common/common.cpp.o
+	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/common/common.cpp.o
+.PHONY : common/common.cpp.o
+
+common/common.i: common/common.cpp.i
+
+.PHONY : common/common.i
+
+# target to preprocess a source file
+common/common.cpp.i:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/common/common.cpp.i
+	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/common/common.cpp.i
+.PHONY : common/common.cpp.i
+
+common/common.s: common/common.cpp.s
+
+.PHONY : common/common.s
+
+# target to generate assembly for a file
+common/common.cpp.s:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/common/common.cpp.s
+	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/common/common.cpp.s
+.PHONY : common/common.cpp.s
+
 ip_server/BoostTCPServerHelper.o: ip_server/BoostTCPServerHelper.cpp.o
 
 .PHONY : ip_server/BoostTCPServerHelper.o
@@ -304,6 +334,36 @@ protocol/ProtocolHelper.cpp.s:
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/ProtocolHelper.cpp.s
 .PHONY : protocol/ProtocolHelper.cpp.s
 
+protocol/protocol.o: protocol/protocol.cpp.o
+
+.PHONY : protocol/protocol.o
+
+# target to build an object file
+protocol/protocol.cpp.o:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/protocol.cpp.o
+	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/protocol.cpp.o
+.PHONY : protocol/protocol.cpp.o
+
+protocol/protocol.i: protocol/protocol.cpp.i
+
+.PHONY : protocol/protocol.i
+
+# target to preprocess a source file
+protocol/protocol.cpp.i:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/protocol.cpp.i
+	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/protocol.cpp.i
+.PHONY : protocol/protocol.cpp.i
+
+protocol/protocol.s: protocol/protocol.cpp.s
+
+.PHONY : protocol/protocol.s
+
+# target to generate assembly for a file
+protocol/protocol.cpp.s:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/protocol.cpp.s
+	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/protocol.cpp.s
+.PHONY : protocol/protocol.cpp.s
+
 utils/FileUtils.o: utils/FileUtils.cpp.o
 
 .PHONY : utils/FileUtils.o
@@ -374,6 +434,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... nip"
 	@echo "... is"
+	@echo "... common/common.o"
+	@echo "... common/common.i"
+	@echo "... common/common.s"
 	@echo "... ip_server/BoostTCPServerHelper.o"
 	@echo "... ip_server/BoostTCPServerHelper.i"
 	@echo "... ip_server/BoostTCPServerHelper.s"
@@ -392,6 +455,9 @@ help:
 	@echo "... protocol/ProtocolHelper.o"
 	@echo "... protocol/ProtocolHelper.i"
 	@echo "... protocol/ProtocolHelper.s"
+	@echo "... protocol/protocol.o"
+	@echo "... protocol/protocol.i"
+	@echo "... protocol/protocol.s"
 	@echo "... utils/FileUtils.o"
 	@echo "... utils/FileUtils.i"
 	@echo "... utils/FileUtils.s"

@@ -12,7 +12,7 @@
 
 class RequestBody: public BaseProtocolItem {
 public:
-    RequestBody(int code, std::string data): BaseProtocolItem(code, std::move(data)){}
+    RequestBody(int code, std::string data): BaseProtocolItem(code, data){}
 };
 
 
