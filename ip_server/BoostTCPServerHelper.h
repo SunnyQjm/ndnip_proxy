@@ -5,28 +5,22 @@
 #ifndef NDNIP_PROXY_BOOSTTCPSERVERHELPER_H
 #define NDNIP_PROXY_BOOSTTCPSERVERHELPER_H
 
-#define BOOST_ASIO_HAS_MOVE
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
+#include "common.h"
 #include <boost/filesystem.hpp>
-#include <iostream>
 
 using namespace boost::asio;
 using namespace boost::system;
 
 class BoostTCPServerHelper {
 public:
-    BoostTCPServerHelper(in_port_t port, unsigned int buffer_size = 8000);
+    explicit BoostTCPServerHelper(unsigned short port, unsigned int buffer_size = 8000);
 
     void startListen();
 
-    std::string recvStr(ip::tcp::socket *sock);
-
-    void writeStr(ip::tcp::socket *sock, const std::string& msg);
-
     void easyErr(ip::tcp::socket *sock, int code);
 
-    void easySuccess(ip::tcp::socket *sock, const std::string& msg = "success", int fileSize = 0, int chunkSize = 0);
+    void easySuccess(ip::tcp::socket *sock, const std::string& msg = "success", unsigned int fileSize = 0,
+            unsigned int chunkSize = 0);
 
     void deal(ip::tcp::socket *sockPtr);
 
