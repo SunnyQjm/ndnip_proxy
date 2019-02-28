@@ -22,7 +22,8 @@ public:
      * 从远程服务器获取文件
      * @param fileName
      */
-    void getFileFromServer(const std::string& fileName);
+    void getFileFromServer(const std::string& fileName, function<void(ResponseBody &)> onResponse,
+            function<void(uint8_t *, size_t, int)> callback);
 
 private:
     io_service service;

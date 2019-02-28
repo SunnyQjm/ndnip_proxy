@@ -124,6 +124,19 @@ nip/fast:
 .PHONY : nip/fast
 
 #=============================================================================
+# Target rules for targets named nc
+
+# Build rule for target.
+nc: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 nc
+.PHONY : nc
+
+# fast build rule for target.
+nc/fast:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/build
+.PHONY : nc/fast
+
+#=============================================================================
 # Target rules for targets named is
 
 # Build rule for target.
@@ -220,6 +233,33 @@ ip_server/ip_server.cpp.s:
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/ip_server/ip_server.cpp.s
 .PHONY : ip_server/ip_server.cpp.s
 
+ndn_client/ndn_client.o: ndn_client/ndn_client.cpp.o
+
+.PHONY : ndn_client/ndn_client.o
+
+# target to build an object file
+ndn_client/ndn_client.cpp.o:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/ndn_client/ndn_client.cpp.o
+.PHONY : ndn_client/ndn_client.cpp.o
+
+ndn_client/ndn_client.i: ndn_client/ndn_client.cpp.i
+
+.PHONY : ndn_client/ndn_client.i
+
+# target to preprocess a source file
+ndn_client/ndn_client.cpp.i:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/ndn_client/ndn_client.cpp.i
+.PHONY : ndn_client/ndn_client.cpp.i
+
+ndn_client/ndn_client.s: ndn_client/ndn_client.cpp.s
+
+.PHONY : ndn_client/ndn_client.s
+
+# target to generate assembly for a file
+ndn_client/ndn_client.cpp.s:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/ndn_client/ndn_client.cpp.s
+.PHONY : ndn_client/ndn_client.cpp.s
+
 ndn_ip_proxy/BoostTCPClientHelper.o: ndn_ip_proxy/BoostTCPClientHelper.cpp.o
 
 .PHONY : ndn_ip_proxy/BoostTCPClientHelper.o
@@ -281,6 +321,7 @@ protocol/BaseProtocolItem.o: protocol/BaseProtocolItem.cpp.o
 # target to build an object file
 protocol/BaseProtocolItem.cpp.o:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/BaseProtocolItem.cpp.o
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/protocol/BaseProtocolItem.cpp.o
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/BaseProtocolItem.cpp.o
 .PHONY : protocol/BaseProtocolItem.cpp.o
 
@@ -291,6 +332,7 @@ protocol/BaseProtocolItem.i: protocol/BaseProtocolItem.cpp.i
 # target to preprocess a source file
 protocol/BaseProtocolItem.cpp.i:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/BaseProtocolItem.cpp.i
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/protocol/BaseProtocolItem.cpp.i
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/BaseProtocolItem.cpp.i
 .PHONY : protocol/BaseProtocolItem.cpp.i
 
@@ -301,6 +343,7 @@ protocol/BaseProtocolItem.s: protocol/BaseProtocolItem.cpp.s
 # target to generate assembly for a file
 protocol/BaseProtocolItem.cpp.s:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/BaseProtocolItem.cpp.s
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/protocol/BaseProtocolItem.cpp.s
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/BaseProtocolItem.cpp.s
 .PHONY : protocol/BaseProtocolItem.cpp.s
 
@@ -311,6 +354,7 @@ protocol/ProtocolHelper.o: protocol/ProtocolHelper.cpp.o
 # target to build an object file
 protocol/ProtocolHelper.cpp.o:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/ProtocolHelper.cpp.o
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/protocol/ProtocolHelper.cpp.o
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/ProtocolHelper.cpp.o
 .PHONY : protocol/ProtocolHelper.cpp.o
 
@@ -321,6 +365,7 @@ protocol/ProtocolHelper.i: protocol/ProtocolHelper.cpp.i
 # target to preprocess a source file
 protocol/ProtocolHelper.cpp.i:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/ProtocolHelper.cpp.i
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/protocol/ProtocolHelper.cpp.i
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/ProtocolHelper.cpp.i
 .PHONY : protocol/ProtocolHelper.cpp.i
 
@@ -331,6 +376,7 @@ protocol/ProtocolHelper.s: protocol/ProtocolHelper.cpp.s
 # target to generate assembly for a file
 protocol/ProtocolHelper.cpp.s:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/protocol/ProtocolHelper.cpp.s
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/protocol/ProtocolHelper.cpp.s
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/protocol/ProtocolHelper.cpp.s
 .PHONY : protocol/ProtocolHelper.cpp.s
 
@@ -371,6 +417,7 @@ utils/FileUtils.o: utils/FileUtils.cpp.o
 # target to build an object file
 utils/FileUtils.cpp.o:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/FileUtils.cpp.o
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/FileUtils.cpp.o
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/utils/FileUtils.cpp.o
 .PHONY : utils/FileUtils.cpp.o
 
@@ -381,6 +428,7 @@ utils/FileUtils.i: utils/FileUtils.cpp.i
 # target to preprocess a source file
 utils/FileUtils.cpp.i:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/FileUtils.cpp.i
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/FileUtils.cpp.i
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/utils/FileUtils.cpp.i
 .PHONY : utils/FileUtils.cpp.i
 
@@ -391,6 +439,7 @@ utils/FileUtils.s: utils/FileUtils.cpp.s
 # target to generate assembly for a file
 utils/FileUtils.cpp.s:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/FileUtils.cpp.s
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/FileUtils.cpp.s
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/utils/FileUtils.cpp.s
 .PHONY : utils/FileUtils.cpp.s
 
@@ -401,6 +450,7 @@ utils/JSONCPPHelper.o: utils/JSONCPPHelper.cpp.o
 # target to build an object file
 utils/JSONCPPHelper.cpp.o:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/JSONCPPHelper.cpp.o
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/JSONCPPHelper.cpp.o
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/utils/JSONCPPHelper.cpp.o
 .PHONY : utils/JSONCPPHelper.cpp.o
 
@@ -411,6 +461,7 @@ utils/JSONCPPHelper.i: utils/JSONCPPHelper.cpp.i
 # target to preprocess a source file
 utils/JSONCPPHelper.cpp.i:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/JSONCPPHelper.cpp.i
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/JSONCPPHelper.cpp.i
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/utils/JSONCPPHelper.cpp.i
 .PHONY : utils/JSONCPPHelper.cpp.i
 
@@ -421,8 +472,39 @@ utils/JSONCPPHelper.s: utils/JSONCPPHelper.cpp.s
 # target to generate assembly for a file
 utils/JSONCPPHelper.cpp.s:
 	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/JSONCPPHelper.cpp.s
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/JSONCPPHelper.cpp.s
 	$(MAKE) -f CMakeFiles/is.dir/build.make CMakeFiles/is.dir/utils/JSONCPPHelper.cpp.s
 .PHONY : utils/JSONCPPHelper.cpp.s
+
+utils/NDNHelper.o: utils/NDNHelper.cpp.o
+
+.PHONY : utils/NDNHelper.o
+
+# target to build an object file
+utils/NDNHelper.cpp.o:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/NDNHelper.cpp.o
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/NDNHelper.cpp.o
+.PHONY : utils/NDNHelper.cpp.o
+
+utils/NDNHelper.i: utils/NDNHelper.cpp.i
+
+.PHONY : utils/NDNHelper.i
+
+# target to preprocess a source file
+utils/NDNHelper.cpp.i:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/NDNHelper.cpp.i
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/NDNHelper.cpp.i
+.PHONY : utils/NDNHelper.cpp.i
+
+utils/NDNHelper.s: utils/NDNHelper.cpp.s
+
+.PHONY : utils/NDNHelper.s
+
+# target to generate assembly for a file
+utils/NDNHelper.cpp.s:
+	$(MAKE) -f CMakeFiles/nip.dir/build.make CMakeFiles/nip.dir/utils/NDNHelper.cpp.s
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/NDNHelper.cpp.s
+.PHONY : utils/NDNHelper.cpp.s
 
 # Help Target
 help:
@@ -433,6 +515,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... nip"
+	@echo "... nc"
 	@echo "... is"
 	@echo "... common/common.o"
 	@echo "... common/common.i"
@@ -443,6 +526,9 @@ help:
 	@echo "... ip_server/ip_server.o"
 	@echo "... ip_server/ip_server.i"
 	@echo "... ip_server/ip_server.s"
+	@echo "... ndn_client/ndn_client.o"
+	@echo "... ndn_client/ndn_client.i"
+	@echo "... ndn_client/ndn_client.s"
 	@echo "... ndn_ip_proxy/BoostTCPClientHelper.o"
 	@echo "... ndn_ip_proxy/BoostTCPClientHelper.i"
 	@echo "... ndn_ip_proxy/BoostTCPClientHelper.s"
@@ -464,6 +550,9 @@ help:
 	@echo "... utils/JSONCPPHelper.o"
 	@echo "... utils/JSONCPPHelper.i"
 	@echo "... utils/JSONCPPHelper.s"
+	@echo "... utils/NDNHelper.o"
+	@echo "... utils/NDNHelper.i"
+	@echo "... utils/NDNHelper.s"
 .PHONY : help
 
 

@@ -24,7 +24,7 @@ namespace mingj {
         }
 
         size_t readLine(ip::tcp::socket *sock, char *buf, size_t len) {
-            return read(*sock, buffer(buf, len), boost::bind(read_complete, buf, _1, _2));
+            return read(*sock, buffer(buf, len), boost::bind(read_complete, buf, boost::placeholders::_1, boost::placeholders::_2));
         }
 
         size_t readn(ip::tcp::socket *sock, char *buf, size_t len) {

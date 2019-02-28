@@ -7,7 +7,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
-#include "string"
+#include <string>
 #include <iostream>
 #include "protocol.h"
 
@@ -25,7 +25,7 @@ namespace mingj {
          * @param msg
          * @return
          */
-        size_t sendStr(ip::tcp::socket *sock, const string& msg);
+        size_t sendStr(ip::tcp::socket *sock, const string &msg);
 
         /**
          * 接收一个字符串
@@ -34,7 +34,7 @@ namespace mingj {
          * @param len
          * @return
          */
-        string readStr(ip::tcp::socket *sock, char* buf, size_t len);
+        string readStr(ip::tcp::socket *sock, char *buf, size_t len);
 
         /**
          * 接收一行数据
@@ -43,7 +43,7 @@ namespace mingj {
          * @param len
          * @return
          */
-        size_t readLine(ip::tcp::socket *sock, char* buf, size_t len);
+        size_t readLine(ip::tcp::socket *sock, char *buf, size_t len);
 
         /**
          * 读取n个字节
@@ -65,6 +65,6 @@ namespace mingj {
     }
 }
 
-using  namespace mingj::sock;
+using namespace mingj::sock;
 using namespace mingj::protocol::error_code;
 #endif //NDNIP_PROXY_COMMON_H

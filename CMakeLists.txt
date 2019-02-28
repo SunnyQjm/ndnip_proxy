@@ -13,11 +13,16 @@ include_directories(common)
 
 add_executable(nip ndn_ip_proxy/ndn_ip_proxy.cpp ndn_ip_proxy/BoostTCPClientHelper.cpp utils/FileUtils.cpp
         utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp protocol/BaseProtocolItem.cpp common/common.cpp
-        protocol/protocol.cpp)
-target_link_libraries(nip boost_system boost_thread boost_filesystem jsoncpp pthread)
+        protocol/protocol.cpp utils/NDNHelper.cpp)
+target_link_libraries(nip ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 add_executable(is ip_server/ip_server.cpp ip_server/BoostTCPServerHelper.cpp utils/FileUtils.cpp
         utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp protocol/BaseProtocolItem.cpp common/common.cpp
         protocol/protocol.cpp)
 target_link_libraries(is boost_system boost_thread boost_filesystem jsoncpp pthread)
+
+
+add_executable(nc ndn_client/ndn_client.cpp utils/NDNHelper.cpp utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp
+        protocol/ProtocolHelper.cpp utils/FileUtils.cpp)
+target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 #target_link_libraries(ndnip_proxy pcap ndn-cxx boost_system boost_thread jsoncpp pthread)

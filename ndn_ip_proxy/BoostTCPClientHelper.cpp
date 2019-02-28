@@ -24,7 +24,8 @@ BoostTCPClientHelper::~BoostTCPClientHelper() {
 }
 
 
-void BoostTCPClientHelper::getFileFromServer(const std::string &fileName) {
+void BoostTCPClientHelper::getFileFromServer(const std::string &fileName, function<void(ResponseBody &)> onResponse,
+        function<void(uint8_t *, size_t, int)> callback) {
     RequestBody requestBody(ProtocolHelper::REQUEST_CODE_FILE, fileName);
 
     // 发送传输文件请求
@@ -33,6 +34,9 @@ void BoostTCPClientHelper::getFileFromServer(const std::string &fileName) {
     string responseJson = readStr(sock, this->buf, this->buffer_size);
 
     ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(responseJson);
+
+    // 服务器的消息
+    onResponse(responseBody);
     cout << responseBody.toJson() << endl;
     int total = 0;
     if (responseBody.code == ProtocolHelper::RESPONSE_CODE_SUCCESS) { // 请求成功，且文件存在，则开始接收文件
@@ -40,21 +44,18 @@ void BoostTCPClientHelper::getFileFromServer(const std::string &fileName) {
         // 发送给服务器，让服务器开始传文件
         sendStr(sock, "\n");
 
-        auto outputPath = FileUtils::getOutputPath();
-        outputPath.append(fileName);
-        boost::filesystem::fstream os(outputPath, std::ios_base::binary | std::ios_base::out);
+
         int totalSize = responseBody.fileSize;
+        int count = 0;
         while (totalSize > 0) {
             size_t bytes = readn(sock, this->buf,
-                    totalSize > responseBody.chunkSize ? responseBody.chunkSize : totalSize);
+                                 totalSize > responseBody.chunkSize ? responseBody.chunkSize : totalSize);
+            callback((uint8_t *) this->buf, bytes, count++);
             totalSize -= bytes;
             if (bytes == 0)
                 break;
-            os.write(this->buf, bytes);
             total += bytes;
         }
-
-        os.close();
 
         sock->close();
     } else {

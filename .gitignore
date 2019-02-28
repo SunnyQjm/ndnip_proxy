@@ -4,5 +4,8 @@ ic
 is
 nip
 ndnip_proxy.cbp
+
 resource/
 out/
+cmake-build-debug/
+CMakeFiles/

@@ -5,8 +5,6 @@
 #define IP_NDN_STACK_CPP_JSONCPPHELPER_H
 
 #include <jsoncpp/json/json.h>
-#include <iostream>
-#include <fstream>
 
 using namespace std;
 class JSONCPPHelper {
