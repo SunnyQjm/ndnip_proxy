@@ -7,10 +7,19 @@
 #include "protocol.h"
 #include "NDNHelper.h"
 #include <cmath>
+#include "OnlinePreviewer.h"
 
-int main() {
-    string base = "/IP/127.0.0.1/9748/";
-    string fileName = "ndn.mp4";
+int main(int argc, char *argv[]) {
+    if (argc != 4) {
+        cout << "usage: ./nc <ip> <port> <fileName>" << endl;
+        return 0;
+    }
+    string base = "/IP/";
+    base += argv[1];
+    base += "/";
+    base += argv[2];
+    base += "/";
+    string fileName = argv[3];
     NDNHelper ndnHelper;
     auto outputPath = FileUtils::getOutputPath();
     outputPath.append(fileName);
@@ -34,18 +43,23 @@ int main() {
                 //////////////////////////////////////////
                 boost::filesystem::fstream os(outputPath, std::ios_base::binary | std::ios_base::out);
                 int count = (int) (responseBody.fileSize / responseBody.chunkSize) + 1;
+
                 // 开始获取所有的文件块
                 for (int i = 0; i < count; i++) {
                     ndnHelper.expressInterest(base + fileName + "/" + to_string(i),
                                               [=, &os, &ndnHelper](const Interest &interest, const Data &data) {
-//                                                  cout << i << ": " << data.getContent().value_size() << endl;
+                                                  // 偏移到指定位置
+                                                  os.seekp(i * responseBody.chunkSize, std::ios::beg);
                                                   os.write((char *) data.getContent().value(),
                                                            data.getContent().value_size());
-                                                  if(i == count -1) {
+                                                  if (i == count - 1) {
                                                       cout << "总共有： " << count << endl;
                                                       os.flush();
                                                       os.close();
-//                                                      ndnHelper.shutdown();
+
+//                                                      OnlinePreviewer().preview(outputPath.string());
+                                                      //手动退出
+                                                      exit(0);
                                                   }
                                               }, nack, timeout);
                 }

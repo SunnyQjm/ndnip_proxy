@@ -64,6 +64,10 @@ public:
      */
     void asyncProcessEvent();
 
+    Face& getFace() {
+        return face;
+    }
+
 private:
     Face face;
     KeyChain KeyChain_;

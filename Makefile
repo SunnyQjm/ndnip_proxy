@@ -506,6 +506,60 @@ utils/NDNHelper.cpp.s:
 	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/NDNHelper.cpp.s
 .PHONY : utils/NDNHelper.cpp.s
 
+utils/OnlinePreviewer.o: utils/OnlinePreviewer.cpp.o
+
+.PHONY : utils/OnlinePreviewer.o
+
+# target to build an object file
+utils/OnlinePreviewer.cpp.o:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/OnlinePreviewer.cpp.o
+.PHONY : utils/OnlinePreviewer.cpp.o
+
+utils/OnlinePreviewer.i: utils/OnlinePreviewer.cpp.i
+
+.PHONY : utils/OnlinePreviewer.i
+
+# target to preprocess a source file
+utils/OnlinePreviewer.cpp.i:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/OnlinePreviewer.cpp.i
+.PHONY : utils/OnlinePreviewer.cpp.i
+
+utils/OnlinePreviewer.s: utils/OnlinePreviewer.cpp.s
+
+.PHONY : utils/OnlinePreviewer.s
+
+# target to generate assembly for a file
+utils/OnlinePreviewer.cpp.s:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/OnlinePreviewer.cpp.s
+.PHONY : utils/OnlinePreviewer.cpp.s
+
+utils/Previewer.o: utils/Previewer.cpp.o
+
+.PHONY : utils/Previewer.o
+
+# target to build an object file
+utils/Previewer.cpp.o:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/Previewer.cpp.o
+.PHONY : utils/Previewer.cpp.o
+
+utils/Previewer.i: utils/Previewer.cpp.i
+
+.PHONY : utils/Previewer.i
+
+# target to preprocess a source file
+utils/Previewer.cpp.i:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/Previewer.cpp.i
+.PHONY : utils/Previewer.cpp.i
+
+utils/Previewer.s: utils/Previewer.cpp.s
+
+.PHONY : utils/Previewer.s
+
+# target to generate assembly for a file
+utils/Previewer.cpp.s:
+	$(MAKE) -f CMakeFiles/nc.dir/build.make CMakeFiles/nc.dir/utils/Previewer.cpp.s
+.PHONY : utils/Previewer.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -553,6 +607,12 @@ help:
 	@echo "... utils/NDNHelper.o"
 	@echo "... utils/NDNHelper.i"
 	@echo "... utils/NDNHelper.s"
+	@echo "... utils/OnlinePreviewer.o"
+	@echo "... utils/OnlinePreviewer.i"
+	@echo "... utils/OnlinePreviewer.s"
+	@echo "... utils/Previewer.o"
+	@echo "... utils/Previewer.i"
+	@echo "... utils/Previewer.s"
 .PHONY : help
 
 
