@@ -16,6 +16,7 @@
 using namespace std;
 using namespace boost::asio;
 using namespace boost::system;
+using namespace boost::placeholders;
 
 namespace mingj {
     namespace sock {
