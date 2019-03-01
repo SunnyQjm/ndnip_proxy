@@ -9,3 +9,4 @@ resource/
 out/
 cmake-build-debug/
 CMakeFiles/
+Makefile
