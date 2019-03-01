@@ -41,6 +41,10 @@ int main(int argc, char *argv[]) {
                 //////////////////////////////////////////
                 /////// 下面获取所有的文件块，并写到文件当中
                 //////////////////////////////////////////
+                
+                //如果不存在就创建文件
+                FileUtils::createFileIfNotExist(outputPath);
+                
                 boost::filesystem::fstream os(outputPath, std::ios_base::binary | std::ios_base::out | std::ios_base::in);
                 int count = (int) (responseBody.fileSize / responseBody.chunkSize) + 1;
 

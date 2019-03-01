@@ -32,3 +32,11 @@ boost::filesystem::path FileUtils::getOutputPath() {
     return path;
 }
 
+int FileUtils::createFileIfNotExist(const boost::filesystem::path &path, std::ios_base::openmode mode) {
+    if(!boost::filesystem::exists(path)) {
+        boost::filesystem::fstream out(path, mode);
+        out.close();
+    }
+    return 0;
+}
+

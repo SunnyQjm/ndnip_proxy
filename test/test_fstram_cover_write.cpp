@@ -8,6 +8,9 @@ using namespace std;
 int main() {
     auto outputPath = FileUtils::getCurrentPath();
     outputPath.append("test.txt");
+
+    FileUtils::createFileIfNotExist(outputPath);
+
     boost::filesystem::fstream os(outputPath, std::ios_base::out | std::ios_base::in);
     os.seekp(2, std::ios::beg);
     string test = "test";

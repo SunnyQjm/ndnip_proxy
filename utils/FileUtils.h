@@ -18,6 +18,8 @@ public:
 
     static boost::filesystem::path getOutputPath();
 
+    static int createFileIfNotExist(const boost::filesystem::path &path,
+                                    std::ios_base::openmode mode = std::ios::binary | std::ios::out);
     static std::string RES_PATH;
     static std::string OUTPUT_PATH;
 };
