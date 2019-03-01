@@ -7,7 +7,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/placeholders.hpp>
 #include <string>
 #include <iostream>
 #include "protocol.h"
