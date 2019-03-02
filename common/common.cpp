@@ -20,6 +20,7 @@ namespace mingj {
 
         string readStr(ip::tcp::socket *sock, char *buf, size_t len) {
             auto bytes = sock->read_some(buffer(buf, len));
+            cout << "read: " << bytes << endl;
             return string(buf, bytes);
         }
 

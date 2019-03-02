@@ -24,12 +24,13 @@ target_link_libraries(is boost_system boost_thread boost_filesystem jsoncpp pthr
 
 add_executable(nc ndn_client/ndn_client.cpp utils/NDNHelper.cpp utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp
         protocol/ProtocolHelper.cpp utils/FileUtils.cpp utils/Previewer.cpp utils/OnlinePreviewer.cpp)
-target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread vlc)
+target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 
 ###############################################
 ########## Test
 ###############################################
-add_executable(test_fcw test/test_fstram_cover_write.cpp utils/FileUtils.cpp)
-target_link_libraries(test_fcw boost_system boost_filesystem)
+add_executable(test_fcw test/test_fstram_cover_write.cpp utils/FileUtils.cpp ndn_ip_proxy/BoostTCPClientHelper.cpp
+        utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp protocol/ProtocolHelper.cpp common/common.cpp)
+target_link_libraries(test_fcw boost_system boost_filesystem jsoncpp pthread)
 #target_link_libraries(ndnip_proxy pcap ndn-cxx boost_system boost_thread jsoncpp pthread)

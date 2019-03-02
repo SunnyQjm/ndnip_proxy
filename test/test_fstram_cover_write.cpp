@@ -4,8 +4,11 @@
 
 #include "FileUtils.h"
 #include <iostream>
+#include "BoostTCPClientHelper.h"
+
 using namespace std;
-int main() {
+
+void testFile() {
     auto outputPath = FileUtils::getCurrentPath();
     outputPath.append("test.txt");
 
@@ -18,4 +21,27 @@ int main() {
     os.write("ab", 2);
     os.write(test.c_str(), test.size());
     os.close();
+}
+
+void testLambda() {
+    function<void(int)> test;
+    test = [&test](int i) {
+        cout << i << endl;
+        if (i < 10)
+            test(i + 1);
+    };
+    test(0);
+}
+
+void testIP() {
+    BoostTCPClientHelper boostTCPClientHelper("219.223.194.92", 8010);
+    boostTCPClientHelper.connect();
+    boostTCPClientHelper.testBlockChainRequest();
+}
+
+int main() {
+//    testFile();
+//    testLambda();
+    testIP();
+
 }

@@ -16,6 +16,7 @@ public:
     static std::string KEY_DATA;
     static std::string KEY_FILE_SIZE;
     static std::string KEY_CHUNK_SIZE;
+    static std::string KEY_SLICE_NUM;
 
     BaseProtocolItem(int code, std::string data): code(code), data(std::move(data)){}
     int code;

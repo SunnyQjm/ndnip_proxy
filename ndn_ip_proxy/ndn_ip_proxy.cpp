@@ -19,25 +19,43 @@ void onInterest(const InterestFilter &filter, const Interest &interest, NDNHelpe
 
     vector<string> fileds;
     boost::split(fileds, interestName, boost::is_any_of("/"));
-    if (fileds.size() != 5) {  //可能是格式不对
-        cout << "fileds size" << fileds.size() << endl;
+
+    if (fileds.size() < 5) {
         return;
     }
     string ip = fileds[2];
     auto port = static_cast<unsigned short>(atoi(fileds[3].c_str()));
     string fileName = fileds[4];
-    BoostTCPClientHelper boostTCPClientHelper(ip, port);
-    boostTCPClientHelper.connect();
-    string basePrefix = "/IP/" + ip + "/" + fileds[3] + "/" + fileName + "/";
 
-    // 对拉取文件的请求，去目的IP主机拉取文件并放到缓存当中
-    boostTCPClientHelper.getFileFromServer(fileName, [=, &ndnHelper](ResponseBody &responseBody) {   //请求文件返回结果
-        string json = responseBody.toJson();
-        ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
-    }, [=, &ndnHelper](uint8_t *buf, size_t bytes, int count) {                        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
-        cout << "receive: " << count << endl;
-        ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
-    });
+    if (fileds.size() == 5) {  //可能是格式不对
+        boost::thread t([=]() {
+            BoostTCPClientHelper boostTCPClientHelper(ip, port);
+            boostTCPClientHelper.connect();
+            string basePrefix = "/IP/" + ip + "/" + fileds[3] + "/" + fileName + "/";
+            // 对拉取文件的请求，去目的IP主机拉取文件并放到缓存当中
+            boostTCPClientHelper.getFileFromServer(fileName, [=, &ndnHelper](ResponseBody &responseBody) {   //请求文件返回结果
+                string json = responseBody.toJson();
+                ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
+            }, [=, &ndnHelper](uint8_t *buf, size_t bytes,
+                               int count) {                        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
+//                ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
+            });
+        });
+    } else if (fileds.size() == 6) {
+        int sliceNum = atoi(fileds[5].c_str());
+        boost::thread t([=]() {
+            BoostTCPClientHelper boostTCPClientHelper(ip, port);
+            boostTCPClientHelper.connect();
+            string basePrefix = "/IP/" + ip + "/" + fileds[3] + "/" + fileName + "/";
+            boostTCPClientHelper.getFileSliceFromServer(fileName, sliceNum,
+                                                        [=, &ndnHelper](ResponseBody &responseBody) {},
+                                                        [=, &ndnHelper](uint8_t *buf,
+                                                                        size_t bytes) {                        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
+                                                            ndnHelper->putData(interestName, buf, bytes);
+                                                        });
+        });
+    }
+
 }
 
 void onRegisterFailed(const Name &prefix) {

@@ -25,12 +25,21 @@ public:
     void getFileFromServer(const std::string& fileName, function<void(ResponseBody &)> onResponse,
             function<void(uint8_t *, size_t, int)> callback);
 
+    /**
+     * 从远程服务器获取文件的一片数据
+     */
+    void getFileSliceFromServer(const std::string& fileName, int sliceNum, function<void(ResponseBody &)> onResponse,
+                                function<void(uint8_t *, size_t)> callback);
+
+    void testBlockChainRequest();
 private:
     io_service service;
     ip::tcp::endpoint ep;
     ip::tcp::socket *sock = nullptr;
     char buf[10000];
     size_t buffer_size;
+
+
 };
 
 

@@ -15,6 +15,7 @@ public:
 
     //Request code
     static int REQUEST_CODE_FILE;
+    static int REQUEST_CODE_FILE_SLICE;
 
     //Response code
     static int RESPONSE_CODE_SUCCESS;
