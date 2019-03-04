@@ -30,7 +30,7 @@ target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem json
 ###############################################
 ########## Test
 ###############################################
-add_executable(test_fcw test/test_fstram_cover_write.cpp utils/FileUtils.cpp ndn_ip_proxy/BoostTCPClientHelper.cpp
-        utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp protocol/ProtocolHelper.cpp common/common.cpp)
-target_link_libraries(test_fcw boost_system boost_filesystem jsoncpp pthread)
+#add_executable(test_fcw test/test_fstram_cover_write.cpp utils/FileUtils.cpp ndn_ip_proxy/BoostTCPClientHelper.cpp
+#        utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp protocol/ProtocolHelper.cpp common/common.cpp)
+#target_link_libraries(test_fcw boost_system boost_filesystem jsoncpp pthread)
 #target_link_libraries(ndnip_proxy pcap ndn-cxx boost_system boost_thread jsoncpp pthread)
