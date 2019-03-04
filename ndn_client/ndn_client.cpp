@@ -71,16 +71,16 @@ int main(int argc, char *argv[]) {
             os.seekp(position * responseBody.chunkSize, std::ios::beg);
             os.write((char *) data.getContent().value(),
                      data.getContent().value_size());
-            if (!preview && (position > 1000 || 2 * position > count)) {
-                preview = true;
-                os.close();
-                boost::thread t([=]() {
-                    OnlinePreviewer().preview(outputPath.string());
-                });
-                os.open(outputPath, std::ios_base::binary | std::ios_base::out |
-                                    std::ios_base::in);
-
-            }
+//            if (!preview && (position > 1000 || 2 * position > count)) {
+//                preview = true;
+//                os.close();
+//                boost::thread t([=]() {
+//                    OnlinePreviewer().preview(outputPath.string());
+//                });
+//                os.open(outputPath, std::ios_base::binary | std::ios_base::out |
+//                                    std::ios_base::in);
+//
+//            }
             if (position == count - 1) {
                 cout << "总共有： " << count << endl;
                 os.flush();
