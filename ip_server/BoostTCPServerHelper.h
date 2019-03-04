@@ -36,9 +36,9 @@ private:
     char strBuf[10000];
     unsigned int buffer_size;
     // 共享访问buffer的信号量，用于添加共享锁
-    boost::shared_timed_mutex bufMutex;
-    boost::shared_timed_mutex sliceBufMutex;
-    boost::shared_timed_mutex strBufMutex;
+    boost::shared_mutex bufMutex;
+    boost::shared_mutex sliceBufMutex;
+    boost::shared_mutex strBufMutex;
 };
 
 
