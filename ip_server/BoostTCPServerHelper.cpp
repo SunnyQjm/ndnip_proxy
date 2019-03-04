@@ -129,7 +129,7 @@ void BoostTCPServerHelper::close(ip::tcp::socket *sockPtr) {
     }
 }
 
-void BoostTCPServerHelper::asyncVisitBuf(boost::shared_timed_mutex &mutex, function<void()> callback) {
+void BoostTCPServerHelper::asyncVisitBuf(boost::shared_mutex &mutex, function<void()> callback) {
     boost::shared_lock<boost::shared_mutex> m(mutex);
     callback();
 }

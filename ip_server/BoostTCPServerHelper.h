@@ -26,7 +26,7 @@ public:
 
     void close(ip::tcp::socket *sockPtr);
 
-    void asyncVisitBuf(boost::shared_timed_mutex &mutex, function<void()> callback);
+    void asyncVisitBuf(boost::shared_mutex &mutex, function<void()> callback);
 
 private:
     io_service service;
