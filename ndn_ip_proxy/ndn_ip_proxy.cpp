@@ -38,7 +38,7 @@ void onInterest(const InterestFilter &filter, const Interest &interest, NDNHelpe
                 ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
             }, [=, &ndnHelper](uint8_t *buf, size_t bytes,
                                int count) {                        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
-                ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
+//                ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
             });
         });
     } else if (fileds.size() == 6) {
