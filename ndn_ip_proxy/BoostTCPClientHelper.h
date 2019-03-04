@@ -6,6 +6,7 @@
 #define NDNIP_PROXY_BOOSTTCPCLIENTHELPER_H
 
 #include "common.h"
+#include <boost/thread/pthread/shared_mutex.hpp>
 
 class BoostTCPClientHelper {
 
@@ -32,14 +33,18 @@ public:
                                 function<void(uint8_t *, size_t)> callback);
 
     void testBlockChainRequest();
+
+    void asyncVisitBuf(function<void()> callback);
 private:
     io_service service;
     ip::tcp::endpoint ep;
     ip::tcp::socket *sock = nullptr;
     char buf[10000];
+    char sliceBuf[10000];
     size_t buffer_size;
 
-
+    // 共享访问buffer的信号量，用于添加共享锁
+    boost::shared_timed_mutex bufMutex;
 };
 
 

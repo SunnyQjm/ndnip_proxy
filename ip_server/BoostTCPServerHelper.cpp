@@ -17,9 +17,7 @@ void BoostTCPServerHelper::startListen() {
     while (true) {
         auto *sockPtr = new ip::tcp::socket(service);
         acceptor.accept(*sockPtr);
-        std::string s;
         boost::thread thread([=]() {
-            cout << boost::this_thread::get_id() << endl;
             try {
                 this->deal(sockPtr);
             } catch (exception &e) {
@@ -30,19 +28,19 @@ void BoostTCPServerHelper::startListen() {
 }
 
 void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
-    // 首先传递过来的是请求数据，根据请求，选择合适的文件进行传输
 
-    std::string request(readStr(sockPtr, this->buf, this->buffer_size));
-    cout << "request: " << request << endl;
+    // 首先传递过来的是请求数据，根据请求，选择合适的文件进行传输
+    std::string request;
+    this->asyncVisitBuf(this->strBufMutex, [=, &request] {
+        request = readStr(sockPtr, this->strBuf, this->buffer_size);
+    });
     RequestBody requestBody = ProtocolHelper::jsonToRequestBody(request);
 
-    cout << "receive: " << requestBody.toJson() << endl;
 
     if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE
         || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE) {     //处理文件传输
         boost::filesystem::path filePath = FileUtils::getResourcePath();
 
-//        cout << filePath.string() << ": " << boost::filesystem::exists(filePath) << endl;
         // 得到文件的绝对路径
         filePath.append(requestBody.data);
 
@@ -54,7 +52,6 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
             auto fileSize = boost::filesystem::file_size(filePath);
             size_t chunkSize = this->buffer_size;
 
-
             boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
 
             if (fs.is_open()) {      //打开文件成功
@@ -63,14 +60,18 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                     easySuccess(sockPtr, "success", static_cast<int>(fileSize), chunkSize);
 
                     // 等待客户端写一行数据，标示可以开始传输文件
-                    readLine(sockPtr, this->buf, this->buffer_size);
+                    this->asyncVisitBuf(this->strBufMutex, [=] {
+                        readLine(sockPtr, this->strBuf, this->buffer_size);
+                    });
 
                     int total = 0;
                     while (!fs.eof()) {              //读文件
-                        fs.read(buf, chunkSize);
-                        auto count = fs.gcount();
-                        size_t sendBytes = writen(sockPtr, this->buf, static_cast<size_t>(count));
-                        total += sendBytes;
+                        this->asyncVisitBuf(this->bufMutex, [=, &fs, &total] {
+                            fs.read(buf, chunkSize);
+                            auto count = fs.gcount();
+                            size_t sendBytes = writen(sockPtr, this->buf, static_cast<size_t>(count));
+                            total += sendBytes;
+                        });
                     }
 
                     cout << "total: " << total << endl;
@@ -80,15 +81,19 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                     size_t sliceSize = min(fileSize - (requestBody.sliceNum * chunkSize), chunkSize);
                     easySuccess(sockPtr, "success", static_cast<int>(fileSize), static_cast<unsigned int>(sliceSize));
                     // 等待客户端写一行数据，标示可以开始传输文件
-                    readLine(sockPtr, this->buf, this->buffer_size);
+                    this->asyncVisitBuf(this->strBufMutex, [=] {
+                        readLine(sockPtr, this->strBuf, this->buffer_size);
+                    });
 
                     fs.seekg(chunkSize * requestBody.sliceNum, std::ios_base::beg);
-                    fs.read(buf, chunkSize);
-                    auto count = fs.gcount();
-                    writen(sockPtr, this->buf, static_cast<size_t>(count));
+                    this->asyncVisitBuf(this->sliceBufMutex, [=, &fs] {
+                        fs.read(sliceBuf, chunkSize);
+                        auto count = fs.gcount();
+                        writen(sockPtr, this->sliceBuf, static_cast<size_t>(count));
+                    });
                 }
 
-                //关闭socket写一端
+                //关闭socket写一端（这样会将发送FIN给对端设备，flush发送缓存）
                 sockPtr->shutdown(boost::asio::socket_base::shutdown_type::shutdown_send);
 
             } else {
@@ -122,5 +127,10 @@ void BoostTCPServerHelper::close(ip::tcp::socket *sockPtr) {
         sockPtr->close();
         delete sockPtr;
     }
+}
+
+void BoostTCPServerHelper::asyncVisitBuf(boost::shared_timed_mutex &mutex, function<void()> callback) {
+    boost::shared_lock<boost::shared_mutex> m(mutex);
+    callback();
 }
 
