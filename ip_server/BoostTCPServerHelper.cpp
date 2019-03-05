@@ -36,7 +36,7 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
     });
     RequestBody requestBody = ProtocolHelper::jsonToRequestBody(request);
 
-    cout << request << endl;
+//    cout << request << endl;
     if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE
         || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE
         || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_INFO) {     //处理文件传输
