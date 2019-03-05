@@ -59,44 +59,53 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
             boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
 
             if (fs.is_open()) {      //打开文件成功
-                // 处理传输整个文件
-                if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE) {
-                    easySuccess(sockPtr, "success", static_cast<int>(fileSize), chunkSize);
+                try {
+                    // 处理传输整个文件
+                    if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE) {
+                        easySuccess(sockPtr, "success", static_cast<int>(fileSize), chunkSize);
 
-                    // 等待客户端写一行数据，标示可以开始传输文件
-                    this->asyncVisitBuf(this->strBufMutex, [=] {
-                        readLine(sockPtr, this->strBuf, this->buffer_size);
-                    });
+                        // 等待客户端写一行数据，标示可以开始传输文件
+                        this->asyncVisitBuf(this->strBufMutex, [=] {
+                            readLine(sockPtr, this->strBuf, this->buffer_size);
+                        });
 
-                    int total = 0;
-                    while (!fs.eof()) {              //读文件
-                        this->asyncVisitBuf(this->bufMutex, [=, &fs, &total] {
-                            fs.read(buf, chunkSize);
+                        int total = 0;
+                        while (!fs.eof()) {              //读文件
+                            this->asyncVisitBuf(this->bufMutex, [=, &fs, &total] {
+                                fs.read(buf, chunkSize);
+                                auto count = fs.gcount();
+                                size_t sendBytes = writen(sockPtr, this->buf, static_cast<size_t>(count));
+                                total += sendBytes;
+                            });
+                        }
+
+                        cout << "total: " << total << endl;
+                    } else {    //处理传输一个文件块
+                        size_t sliceSize = min(fileSize - (requestBody.sliceNum * chunkSize), chunkSize);
+                        easySuccess(sockPtr, "success", static_cast<int>(fileSize), static_cast<unsigned int>(sliceSize));
+                        // 等待客户端写一行数据，标示可以开始传输文件
+                        this->asyncVisitBuf(this->strBufMutex, [=] {
+                            readLine(sockPtr, this->strBuf, this->buffer_size);
+                        });
+
+                        fs.seekg(chunkSize * requestBody.sliceNum, std::ios_base::beg);
+                        this->asyncVisitBuf(this->sliceBufMutex, [=, &fs] {
+                            fs.read(sliceBuf, chunkSize);
                             auto count = fs.gcount();
-                            size_t sendBytes = writen(sockPtr, this->buf, static_cast<size_t>(count));
-                            total += sendBytes;
+                            writen(sockPtr, this->sliceBuf, static_cast<size_t>(count));
                         });
                     }
+                } catch(std::exception& e) {
+                    cerr << e.what() << endl;
 
-                    cout << "total: " << total << endl;
-                } else {    //处理传输一个文件块
-                    size_t sliceSize = min(fileSize - (requestBody.sliceNum * chunkSize), chunkSize);
-                    easySuccess(sockPtr, "success", static_cast<int>(fileSize), static_cast<unsigned int>(sliceSize));
-                    // 等待客户端写一行数据，标示可以开始传输文件
-                    this->asyncVisitBuf(this->strBufMutex, [=] {
-                        readLine(sockPtr, this->strBuf, this->buffer_size);
-                    });
-
-                    fs.seekg(chunkSize * requestBody.sliceNum, std::ios_base::beg);
-                    this->asyncVisitBuf(this->sliceBufMutex, [=, &fs] {
-                        fs.read(sliceBuf, chunkSize);
-                        auto count = fs.gcount();
-                        writen(sockPtr, this->sliceBuf, static_cast<size_t>(count));
-                    });
+                    //关闭文件
+                    fs.close();
                 }
+
 
                 //关闭文件
                 fs.close();
+
 
                 //关闭socket写一端（这样会将发送FIN给对端设备，flush发送缓存）
                 sockPtr->shutdown(boost::asio::socket_base::shutdown_type::shutdown_send);

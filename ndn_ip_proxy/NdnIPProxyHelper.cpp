@@ -60,7 +60,7 @@ NdnIPProxyHelper *NdnIPProxyHelper::start() {
                                             (const RegisterPrefixFailureCallback &) std::bind(
                                                     NdnIPProxyHelper::onRegisterFailed,
                                                     std::placeholders::_1));
-    } catch (exception &e) {
+    } catch (std::exception &e) {
         cerr << e.what() << endl;
     }
 
@@ -83,6 +83,7 @@ void NdnIPProxyHelper::onRegisterFailed(const Name &prefix) {
 
 void
 NdnIPProxyHelper::onFileSliceInterest(const InterestFilter &filter, const Interest &interest, NDNHelper *ndnHelper) {
+    return;
     string interestName = interest.getName().toUri();
     cout << "onInterest: " << interestName << endl;
 
