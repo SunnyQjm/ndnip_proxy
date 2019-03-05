@@ -36,7 +36,7 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
     });
     RequestBody requestBody = ProtocolHelper::jsonToRequestBody(request);
 
-
+    cout << request << endl;
     if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE
         || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE) {     //处理文件传输
         boost::filesystem::path filePath = FileUtils::getResourcePath();
@@ -75,8 +75,6 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                     }
 
                     cout << "total: " << total << endl;
-                    //关闭文件
-                    fs.close();
                 } else {    //处理传输一个文件块
                     size_t sliceSize = min(fileSize - (requestBody.sliceNum * chunkSize), chunkSize);
                     easySuccess(sockPtr, "success", static_cast<int>(fileSize), static_cast<unsigned int>(sliceSize));
@@ -92,6 +90,9 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                         writen(sockPtr, this->sliceBuf, static_cast<size_t>(count));
                     });
                 }
+
+                //关闭文件
+                fs.close();
 
                 //关闭socket写一端（这样会将发送FIN给对端设备，flush发送缓存）
                 sockPtr->shutdown(boost::asio::socket_base::shutdown_type::shutdown_send);
