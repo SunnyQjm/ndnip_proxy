@@ -2,13 +2,32 @@
 // Created by mingj on 18-12-22.
 //
 
+#include <iostream>
+#include <fstream>
 #include "JSONCPPHelper.h"
 
-JSONCPPHelper::JSONCPPHelper(const string &json) {
+JSONCPPHelper::JSONCPPHelper(const string &json, int type) {
     Json::Reader reader;
+    switch (type) {
+        case 0:
+            //将根节点解析到root当中
+            reader.parse(json, this->root);
+            break;
+        case 1:
+        default:
+            //读取文件
+            std::ifstream in(json, ios::binary);
 
-    //将根节点解析到root当中
-    reader.parse(json, this->root);
+            if (!in.is_open()) {
+                std::cerr << "config file " << json << " not exist" << std::endl;
+                exit(-1);
+            }
+
+            //将根节点解析到root当中
+            reader.parse(in, this->root);
+            in.close();
+            break;
+    }
 }
 
 string JSONCPPHelper::getString(string key) {

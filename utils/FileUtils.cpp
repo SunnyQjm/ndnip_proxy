@@ -40,3 +40,12 @@ int FileUtils::createFileIfNotExist(const boost::filesystem::path &path, std::io
     return 0;
 }
 
+boost::filesystem::path FileUtils::getResourceFilePathIfExists(const std::string& fileName) {
+    boost::filesystem::path filePath = FileUtils::getResourcePath();
+
+    // 得到文件的绝对路径
+    filePath.append(fileName);
+
+    return filePath;
+}
+

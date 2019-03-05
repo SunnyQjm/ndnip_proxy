@@ -19,12 +19,15 @@ public:
      */
     void connect();
 
+    void close();
+
+    void getFileInfoFromServer(const std::string &fileName, function<void(ResponseBody &)> onResponse);
     /**
      * 从远程服务器获取文件
      * @param fileName
      */
-    void getFileFromServer(const std::string& fileName, function<void(ResponseBody &)> onResponse,
-            function<void(uint8_t *, size_t, int)> callback);
+    void getFileFromServerAndBeginTrans(const std::string &fileName, function<void(ResponseBody &)> onResponse,
+                                        function<void(uint8_t *, size_t, int)> callback);
 
     /**
      * 从远程服务器获取文件的一片数据
@@ -34,17 +37,20 @@ public:
 
     void testBlockChainRequest();
 
-    void asyncVisitBuf(function<void()> callback);
+    void asyncVisitBuf(function<void()> callback, boost::shared_mutex& mutex);
 private:
     io_service service;
     ip::tcp::endpoint ep;
     ip::tcp::socket *sock = nullptr;
     char buf[10000];
     char sliceBuf[10000];
+    char strBuf[10000];
     size_t buffer_size;
 
     // 共享访问buffer的信号量，用于添加共享锁
     boost::shared_mutex bufMutex;
+    boost::shared_mutex sliceBufMutex;
+    boost::shared_mutex strBufMutex;
 };
 
 

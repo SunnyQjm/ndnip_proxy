@@ -38,11 +38,10 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
 
     cout << request << endl;
     if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE
-        || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE) {     //处理文件传输
-        boost::filesystem::path filePath = FileUtils::getResourcePath();
+        || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE
+        || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_INFO) {     //处理文件传输
 
-        // 得到文件的绝对路径
-        filePath.append(requestBody.data);
+        boost::filesystem::path filePath = FileUtils::getResourceFilePathIfExists(requestBody.data);
 
         // 判断文件是否存在，且是一个文件而不是目录
         if (boost::filesystem::exists(filePath)) {
@@ -51,6 +50,11 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
             // 首先告知客户端，文件存在。准备进行文件传输
             auto fileSize = boost::filesystem::file_size(filePath);
             size_t chunkSize = this->buffer_size;
+
+            if(requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_INFO) {
+                easySuccess(sockPtr, "success", static_cast<int>(fileSize), chunkSize);
+                return;
+            }
 
             boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
 

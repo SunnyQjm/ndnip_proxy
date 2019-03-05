@@ -7,6 +7,7 @@
 
 int ProtocolHelper::REQUEST_CODE_FILE = 1;
 int ProtocolHelper::REQUEST_CODE_FILE_SLICE = 2;
+int ProtocolHelper::REQUEST_CODE_FILE_INFO = 3;
 
 int ProtocolHelper::RESPONSE_CODE_SUCCESS = 0;
 
