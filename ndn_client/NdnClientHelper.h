@@ -7,6 +7,7 @@
 
 #include "NDNHelper.h"
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 using namespace std;
 
 class NdnClientHelper {

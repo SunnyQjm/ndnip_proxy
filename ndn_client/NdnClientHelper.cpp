@@ -2,11 +2,11 @@
 // Created by mingj on 19-3-5.
 //
 
+#include "NdnClientHelper.h"
 #include <boost/thread/pthread/shared_mutex.hpp>
 #include <boost/algorithm/string.hpp>
 #include <FileUtils.h>
 #include "JSONCPPHelper.h"
-#include "NdnClientHelper.h"
 #include "protocol.h"
 #include "UUIDUtils.h"
 const string NdnClientHelper::FILE_SLICE_PREFIX = "fileSlicePrefix";
