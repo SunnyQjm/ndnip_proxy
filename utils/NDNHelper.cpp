@@ -3,6 +3,12 @@
 //
 
 //#include <boost/thread.hpp>
+#include <ndn-cxx/data.hpp>
+#include <ndn-cxx/face.hpp>
+#include <ndn-cxx/interest.hpp>
+#include <ndn-cxx/name.hpp>
+#include <ndn-cxx/security/key-chain.hpp>
+#include "JSONCPPHelper.h"
 #include "NDNHelper.h"
 
 NDNHelper::NDNHelper(const string &connectUrl) : face(connectUrl) {

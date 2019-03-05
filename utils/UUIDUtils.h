@@ -5,7 +5,6 @@
 #ifndef NDNIP_PROXY_UUIDUTILS_H
 #define NDNIP_PROXY_UUIDUTILS_H
 
-#include <uuid/uuid.h>
 #include <string>
 
 class UUIDUtils {
