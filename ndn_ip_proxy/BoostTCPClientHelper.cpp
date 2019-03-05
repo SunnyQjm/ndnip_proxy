@@ -31,15 +31,20 @@ BoostTCPClientHelper::~BoostTCPClientHelper() {
 void BoostTCPClientHelper::getFileFromServerAndBeginTrans(const std::string &fileName,
                                                           function<void(ResponseBody &)> onResponse,
                                                           function<void(uint8_t *, size_t, int)> callback) {
+    cout << "getFileFromServerAndBeginTrans" << endl;
     RequestBody requestBody(ProtocolHelper::REQUEST_CODE_FILE, fileName);
 
     // 发送传输文件请求
     sendStr(sock, requestBody.toJson());
 
+    cout << "request: " << requestBody.toJson() << endl;
+
     string responseJson;
     this->asyncVisitBuf([=, &responseJson] {
         responseJson = readStr(sock, this->strBuf, this->buffer_size);
     }, this->strBufMutex);
+
+    cout << "response: " << responseJson << endl;
 
     ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(responseJson);
 

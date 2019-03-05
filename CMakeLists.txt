@@ -23,7 +23,8 @@ target_link_libraries(is boost_system boost_thread boost_filesystem jsoncpp pthr
 
 
 add_executable(nc ndn_client/ndn_client.cpp utils/NDNHelper.cpp utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp
-        protocol/ProtocolHelper.cpp utils/FileUtils.cpp utils/Previewer.cpp utils/OnlinePreviewer.cpp)
+        protocol/ProtocolHelper.cpp utils/FileUtils.cpp utils/Previewer.cpp utils/OnlinePreviewer.cpp
+        ndn_client/NdnClientHelper.cpp utils/UUIDUtils.cpp)
 target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 

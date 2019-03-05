@@ -131,6 +131,7 @@ NdnIPProxyHelper::onFileInfoInterest(const InterestFilter &filter, const Interes
     boost::thread t([=]() {
         BoostTCPClientHelper boostTCPClientHelper(ip, port);
         boostTCPClientHelper.connect();
+        cout << "after connect" << endl;
         string basePrefix = NdnIPProxyHelper::getInstance()->getBaseFileSlicePrefix(ip, port, fileName);
         // 对拉取文件的请求，去目的IP主机拉取文件并放到缓存当中
         boostTCPClientHelper.getFileFromServerAndBeginTrans(fileName, [=, &ndnHelper](
