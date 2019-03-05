@@ -3,12 +3,7 @@
 //
 
 #include "NdnClientHelper.h"
-#include <boost/thread/pthread/shared_mutex.hpp>
-#include <boost/algorithm/string.hpp>
-#include <FileUtils.h>
-#include "JSONCPPHelper.h"
-#include "protocol.h"
-#include "UUIDUtils.h"
+
 const string NdnClientHelper::FILE_SLICE_PREFIX = "fileSlicePrefix";
 const string NdnClientHelper::FILE_INFO_PREFIX = "fileInfoPrefix";
 const string NdnClientHelper::IS_PREVIEW = "isPreview";

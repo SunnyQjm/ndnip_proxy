@@ -6,8 +6,13 @@
 #define NDNIP_PROXY_NDNCLIENTHELPER_H
 
 #include "NDNHelper.h"
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
+#include <boost/thread/pthread/shared_mutex.hpp>
+#include <boost/algorithm/string.hpp>
+#include "JSONCPPHelper.h"
+#include "protocol.h"
+#include "UUIDUtils.h"
+#include <FileUtils.h>
+
 using namespace std;
 
 class NdnClientHelper {
