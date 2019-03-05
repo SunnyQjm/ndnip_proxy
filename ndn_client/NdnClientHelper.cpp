@@ -5,9 +5,12 @@
 #include "JSONCPPHelper.h"
 #include <boost/thread/pthread/shared_mutex.hpp>
 #include <boost/algorithm/string.hpp>
+#include <OnlinePreviewer.h>
 #include "protocol.h"
 #include "UUIDUtils.h"
 #include "NdnClientHelper.h"
+#include <boost/thread.hpp>
+
 
 const string NdnClientHelper::FILE_SLICE_PREFIX = "fileSlicePrefix";
 const string NdnClientHelper::FILE_INFO_PREFIX = "fileInfoPrefix";
@@ -74,36 +77,42 @@ void NdnClientHelper::getFileInfoOnData(const Interest &interest, const Data &da
 
     auto outputPath = FileUtils::getOutputPath();
 
+    outputPath.append(fileName);
+
     //如果不存在就创建文件
     FileUtils::createFileIfNotExist(outputPath);
+
 
     this->os.open(outputPath, std::ios_base::binary | std::ios_base::out | std::ios_base::in);
     int count = (int) (responseBody.fileSize / responseBody.chunkSize) + 1;
     string basePrefix = this->getBaseFileSlicePrefix(ip, port, fileName);
     ndnHelper.expressInterest(basePrefix + "/" + to_string(0),
                               std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
-                                        std::placeholders::_2, 0, count, basePrefix, responseBody.chunkSize),
+                                        std::placeholders::_2, 0, count, basePrefix, responseBody.chunkSize,
+                                        outputPath),
                               std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1, std::placeholders::_2),
                               std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
 }
 
 void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, int position, int totalCount,
-                                    const string basePrefix, int chunkSize) {
+                                    const string basePrefix, int chunkSize, boost::filesystem::path outputPath) {
+    static bool preview = false;
     // 偏移到指定位置
     os.seekp(position * chunkSize, std::ios::beg);
     // 将数据写入到文件当中
     os.write((char *) data.getContent().value(),
              data.getContent().value_size());
-//            if (!preview && (position > 1000 || 2 * position > count)) {
-//                preview = true;
-//                os.close();
-//                boost::thread t([=]() {
-//                    OnlinePreviewer().preview(outputPath.string());
-//                });
-//                os.open(outputPath, std::ios_base::binary | std::ios_base::out |
-//                                    std::ios_base::in);
-//
-//            }
+    if (!preview && (position > 1000 || 2 * position > totalCount)) {
+        preview = true;
+        os.close();
+        cout << outputPath.string() << endl;
+        boost::thread t([=]() {
+            OnlinePreviewer().preview(outputPath.string());
+        });
+        os.open(outputPath, std::ios_base::binary | std::ios_base::out |
+                            std::ios_base::in);
+
+    }
     if (position == totalCount - 1) {
         os.flush();
         os.close();
@@ -113,7 +122,8 @@ void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, 
     } else {
         ndnHelper.expressInterest(basePrefix + "/" + to_string(position + 1),
                                   std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
-                                            std::placeholders::_2, position + 1, totalCount, basePrefix, chunkSize),
+                                            std::placeholders::_2, position + 1, totalCount, basePrefix, chunkSize,
+                                            outputPath),
                                   std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
                                             std::placeholders::_2),
                                   std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
