@@ -112,7 +112,7 @@ BoostTCPClientHelper::getFileSliceFromServer(const std::string &fileName, int sl
 
 void
 BoostTCPClientHelper::getFileInfoFromServer(const std::string &fileName, function<void(ResponseBody &)> onResponse) {
-    RequestBody requestBody(ProtocolHelper::REQUEST_CODE_FILE_SLICE, fileName);
+    RequestBody requestBody(ProtocolHelper::REQUEST_CODE_FILE_INFO, fileName);
     // 发送获取文件信息的请求
     sendStr(sock, requestBody.toJson());
 
@@ -121,8 +121,8 @@ BoostTCPClientHelper::getFileInfoFromServer(const std::string &fileName, functio
     this->asyncVisitBuf([=, &responseJson] {
         responseJson = readStr(sock, this->strBuf, this->buffer_size);
     }, this->strBufMutex);
-
     ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(responseJson);
+    onResponse(responseBody);
     sendStr(sock, "\n");
     close();
 }

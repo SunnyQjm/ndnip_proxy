@@ -4,7 +4,7 @@
 
 #include "BoostTCPServerHelper.h"
 #include "FileUtils.h"
-
+#include "FStreamManager.h"
 
 BoostTCPServerHelper::BoostTCPServerHelper(unsigned short port, unsigned int buffer_size) :
         port(port),
@@ -36,29 +36,30 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
     });
     RequestBody requestBody = ProtocolHelper::jsonToRequestBody(request);
 
-//    cout << request << endl;
+    cout << request << endl;
     if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE
         || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE
         || requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_INFO) {     //处理文件传输
-
         boost::filesystem::path filePath = FileUtils::getResourceFilePathIfExists(requestBody.data);
 
         // 判断文件是否存在，且是一个文件而不是目录
         if (boost::filesystem::exists(filePath)) {
             // 存在则进行文件传输操作
 
+
             // 首先告知客户端，文件存在。准备进行文件传输
             auto fileSize = boost::filesystem::file_size(filePath);
             size_t chunkSize = this->buffer_size;
 
-            if(requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_INFO) {
+            if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_INFO) {
                 easySuccess(sockPtr, "success", static_cast<int>(fileSize), chunkSize);
                 return;
             }
 
-            boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
-
-            if (fs.is_open()) {      //打开文件成功
+            // 将fs交给资源管理对象，在资源管理对象的析构函数中会自动执行close
+            mingj::manager::FStreamManager fsm(filePath, std::ios_base::binary | std::ios_base::in);
+//            boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
+            if (fsm.is_open()) {      //打开文件成功
                 try {
                     // 处理传输整个文件
                     if (requestBody.code == ProtocolHelper::REQUEST_CODE_FILE) {
@@ -70,10 +71,10 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                         });
 
                         int total = 0;
-                        while (!fs.eof()) {              //读文件
-                            this->asyncVisitBuf(this->bufMutex, [=, &fs, &total] {
-                                fs.read(buf, chunkSize);
-                                auto count = fs.gcount();
+                        while (!fsm.eof()) {              //读文件
+                            this->asyncVisitBuf(this->bufMutex, [=, &fsm, &total] {
+                                fsm.read(buf, chunkSize);
+                                auto count = fsm.gcount();
                                 size_t sendBytes = writen(sockPtr, this->buf, static_cast<size_t>(count));
                                 total += sendBytes;
                             });
@@ -82,29 +83,27 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                         cout << "total: " << total << endl;
                     } else {    //处理传输一个文件块
                         size_t sliceSize = min(fileSize - (requestBody.sliceNum * chunkSize), chunkSize);
-                        easySuccess(sockPtr, "success", static_cast<int>(fileSize), static_cast<unsigned int>(sliceSize));
+                        easySuccess(sockPtr, "success", static_cast<int>(fileSize),
+                                    static_cast<unsigned int>(sliceSize));
                         // 等待客户端写一行数据，标示可以开始传输文件
                         this->asyncVisitBuf(this->strBufMutex, [=] {
                             readLine(sockPtr, this->strBuf, this->buffer_size);
                         });
 
-                        fs.seekg(chunkSize * requestBody.sliceNum, std::ios_base::beg);
-                        this->asyncVisitBuf(this->sliceBufMutex, [=, &fs] {
-                            fs.read(sliceBuf, chunkSize);
-                            auto count = fs.gcount();
+                        fsm.seekg(chunkSize * requestBody.sliceNum, std::ios_base::beg);
+                        this->asyncVisitBuf(this->sliceBufMutex, [=, &fsm] {
+                            fsm.read(sliceBuf, chunkSize);
+                            auto count = fsm.gcount();
                             writen(sockPtr, this->sliceBuf, static_cast<size_t>(count));
                         });
                     }
-                } catch(std::exception& e) {
+                } catch (std::exception &e) {
                     cerr << e.what() << endl;
-
-                    //关闭文件
-                    fs.close();
                 }
 
 
-                //关闭文件
-                fs.close();
+//                //关闭文件
+//                fs.close();
 
 
                 //关闭socket写一端（这样会将发送FIN给对端设备，flush发送缓存）

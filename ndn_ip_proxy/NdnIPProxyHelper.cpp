@@ -83,7 +83,6 @@ void NdnIPProxyHelper::onRegisterFailed(const Name &prefix) {
 
 void
 NdnIPProxyHelper::onFileSliceInterest(const InterestFilter &filter, const Interest &interest, NDNHelper *ndnHelper) {
-    return;
     string interestName = interest.getName().toUri();
     cout << "onInterest: " << interestName << endl;
 
@@ -132,17 +131,21 @@ NdnIPProxyHelper::onFileInfoInterest(const InterestFilter &filter, const Interes
     boost::thread t([=]() {
         BoostTCPClientHelper boostTCPClientHelper(ip, port);
         boostTCPClientHelper.connect();
-        cout << "after connect" << endl;
         string basePrefix = NdnIPProxyHelper::getInstance()->getBaseFileSlicePrefix(ip, port, fileName);
         // 对拉取文件的请求，去目的IP主机拉取文件并放到缓存当中
-        boostTCPClientHelper.getFileFromServerAndBeginTrans(fileName, [=, &ndnHelper](
+        boostTCPClientHelper.getFileInfoFromServer(fileName, [=, &ndnHelper](
                 ResponseBody &responseBody) {   //请求文件返回结果
             string json = responseBody.toJson();
             ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
-        }, [=, &ndnHelper](uint8_t *buf, size_t bytes,
-                           int count) {        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
-            ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
         });
+//        boostTCPClientHelper.getFileFromServerAndBeginTrans(fileName, [=, &ndnHelper](
+//                ResponseBody &responseBody) {   //请求文件返回结果
+//            string json = responseBody.toJson();
+//            ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
+//        }, [=, &ndnHelper](uint8_t *buf, size_t bytes,
+//                           int count) {        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
+//            ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
+//        });
     });
 }
 

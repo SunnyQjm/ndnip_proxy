@@ -8,6 +8,7 @@ include_directories(ndn_ip_proxy)
 include_directories(utils)
 include_directories(protocol)
 include_directories(common)
+include_directories(resource_manager)
 
 #add_executable(ndnip_proxy main.cpp ip_server/ip_server.cpp ndn_ip_proxy/ndn_ip_proxy.cpp)
 
@@ -18,7 +19,7 @@ target_link_libraries(nip ndn-cxx boost_system boost_thread boost_filesystem jso
 
 add_executable(is ip_server/ip_server.cpp ip_server/BoostTCPServerHelper.cpp utils/FileUtils.cpp
         utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp protocol/BaseProtocolItem.cpp common/common.cpp
-        protocol/protocol.cpp)
+        protocol/protocol.cpp resource_manager/FStreamManager.cpp)
 target_link_libraries(is boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 
@@ -35,3 +36,6 @@ target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem json
 #        utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp protocol/ProtocolHelper.cpp common/common.cpp)
 #target_link_libraries(test_fcw boost_system boost_filesystem jsoncpp pthread)
 #target_link_libraries(ndnip_proxy pcap ndn-cxx boost_system boost_thread jsoncpp pthread)
+
+add_executable(test_boost_timer test/test_boost_timer.cpp)
+target_link_libraries(test_boost_timer boost_system)

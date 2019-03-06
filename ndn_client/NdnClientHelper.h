@@ -44,7 +44,7 @@ public:
     void getFileOnData(const Interest &interest, const Data &data,
                        int position,
                        int totalCount,
-                       const string basePrefix, int chunkSize,
+                       const string& basePrefix, int chunkSize,
                        boost::filesystem::path outputPath);
 
     const string getBaseFileInfoPrefix(const string &ip, unsigned short port, const string &fileName);
