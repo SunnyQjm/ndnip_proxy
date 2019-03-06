@@ -7,6 +7,8 @@
 
 #include <boost/filesystem.hpp>
 
+using namespace boost::filesystem;
+
 namespace mingj {
     namespace manager {
         class Uncopyable {
