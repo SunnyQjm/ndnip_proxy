@@ -102,7 +102,7 @@ void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, 
     // 将数据写入到文件当中
     os.write((char *) data.getContent().value(),
              data.getContent().value_size());
-    if (!preview && (position > 1000 || 2 * position > totalCount)) {
+    if (isPreview && !preview && (position > 1000 || 2 * position > totalCount)) {
         preview = true;
         os.close();
         cout << outputPath.string() << endl;
