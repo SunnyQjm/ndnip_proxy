@@ -6,7 +6,6 @@
 #define NDNIP_PROXY_BOOSTTCPSERVERHELPER_H
 
 #include "common.h"
-#include <boost/filesystem.hpp>
 
 using namespace boost::asio;
 using namespace boost::system;

@@ -2,8 +2,8 @@
 // Created by mingj on 19-3-6.
 //
 
-#include <iostream>
 #include "FStreamManager.h"
+#include <iostream>
 
 namespace mingj {
     namespace manager {
