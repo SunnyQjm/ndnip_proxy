@@ -6,8 +6,7 @@
 #define NDNIP_PROXY_FSTREAMMANAGER_H
 
 #include <boost/filesystem.hpp>
-
-using namespace boost::filesystem;
+#include <boost/filesystem/fstream.hpp>
 
 namespace mingj {
     namespace manager {
