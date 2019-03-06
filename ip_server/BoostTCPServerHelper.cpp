@@ -19,7 +19,9 @@ void BoostTCPServerHelper::startListen() {
         boost::thread thread([=]() {
             try {
                 this->deal(sockPtr);
+                close(sockPtr);
             } catch (exception &e) {
+                close(sockPtr);
                 cerr << e.what() << endl;
             }
         });
