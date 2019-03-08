@@ -18,14 +18,12 @@ public:
 
     void easyErr(ip::tcp::socket *sock, int code);
 
-    void easySuccess(ip::tcp::socket *sock, const std::string &msg = "success", unsigned int fileSize = 0,
-                     unsigned int chunkSize = 0);
+    void easySuccess(ip::tcp::socket *sock, const std::string &msg = "success", size_t fileSize = 0,
+                     size_t chunkSize = 0);
 
     void deal(ip::tcp::socket *sockPtr);
 
     void close(ip::tcp::socket *sockPtr);
-
-    void asyncVisitBuf(boost::shared_mutex &mutex, function<void()> callback);
 
 private:
     io_service service;

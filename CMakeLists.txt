@@ -17,8 +17,8 @@ add_executable(nip ndn_ip_proxy/ndn_ip_proxy.cpp ndn_ip_proxy/BoostTCPClientHelp
         protocol/protocol.cpp utils/NDNHelper.cpp ndn_ip_proxy/NdnIPProxyHelper.cpp)
 target_link_libraries(nip ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 
-add_executable(is ip_server/ip_server.cpp  utils/FileUtils.cpp utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp
-        protocol/BaseProtocolItem.cpp common/common.cpp
+add_executable(is ip_server/ip_server.cpp utils/FileUtils.cpp utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp
+        protocol/BaseProtocolItem.cpp common/common.cpp utils/MutexHelper.cpp resource_manager/ResourceManagerFactory.cpp
         protocol/protocol.cpp resource_manager/FStreamManager.cpp ip_server/BoostTCPServerHelper.cpp)
 target_link_libraries(is boost_system boost_thread boost_filesystem jsoncpp pthread)
 
@@ -39,3 +39,6 @@ target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem json
 
 add_executable(test_boost_timer test/test_boost_timer.cpp)
 target_link_libraries(test_boost_timer boost_system)
+
+add_executable(test_rmf test/test_rmf.cpp resource_manager/ResourceManagerFactory.cpp utils/FileUtils.cpp)
+target_link_libraries(test_rmf boost_system boost_filesystem)
