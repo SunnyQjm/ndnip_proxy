@@ -44,7 +44,7 @@ public:
     void getFileOnData(const Interest &interest, const Data &data,
                        int position,
                        int totalCount,
-                       const string& basePrefix, int chunkSize,
+                       const string &basePrefix, int chunkSize,
                        boost::filesystem::path outputPath);
 
     const string getBaseFileInfoPrefix(const string &ip, unsigned short port, const string &fileName);
@@ -52,6 +52,9 @@ public:
     const string getBaseFileSlicePrefix(const string &ip, unsigned short port, const string &fileName);
 
 private:
+
+    NdnClientHelper() = default;
+
     static const string FILE_SLICE_PREFIX;
     static const string FILE_INFO_PREFIX;
     static const string IS_PREVIEW;
@@ -60,10 +63,10 @@ private:
 
     //config
     string fileSlicePrefix;
-    size_t fileSlicePrefixLen;
+    size_t fileSlicePrefixLen{};
     string fileInfoPrefix;
-    size_t fileInfoPrefixLen;
-    bool isPreview;
+    size_t fileInfoPrefixLen{};
+    bool isPreview{};
 };
 
 

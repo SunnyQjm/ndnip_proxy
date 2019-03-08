@@ -1,5 +1,5 @@
 {
   "fileSlicePrefix": "/NDN-IP/FILE_SLICE",
   "fileInfoPrefix": "/NDN-IP/FILE_INFO",
-  "isPreview": false
+  "isPreview": true
 }

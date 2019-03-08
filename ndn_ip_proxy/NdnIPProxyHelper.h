@@ -12,24 +12,25 @@
 #include <boost/thread/pthread/shared_mutex.hpp>
 
 using namespace std;
+
 class NdnIPProxyHelper {
 public:
     /**
      * 获取单例
      * @return
      */
-    static NdnIPProxyHelper* getInstance();
+    static NdnIPProxyHelper *getInstance();
 
     /**
      * 更新配置
      * @param configPath
      * @return
      */
-    NdnIPProxyHelper* updateConfig(const string& configPath);
+    NdnIPProxyHelper *updateConfig(const string &configPath);
 
-    NdnIPProxyHelper* stop();
+    NdnIPProxyHelper *stop();
 
-    NdnIPProxyHelper* start();
+    NdnIPProxyHelper *start();
 
     // Callback
     static void onRegisterFailed(const Name &prefix);
@@ -47,16 +48,17 @@ public:
 
     size_t getFileInfoPrefixLen() const;
 
-    const string getBaseFileSlicePrefix(const string& ip, unsigned short port, const string& fileName);
+    const string getBaseFileSlicePrefix(const string &ip, unsigned short port, const string &fileName);
 
 private:
+    NdnIPProxyHelper() = default;
     NDNHelper *pNdnHelper = nullptr;
     static const string FILE_SLICE_PREFIX;
     static const string FILE_INFO_PREFIX;
     string fileSlicePrefix;
-    size_t fileSlicePrefixLen;
+    size_t fileSlicePrefixLen{};
     string fileInfoPrefix;
-    size_t fileInfoPrefixLen;
+    size_t fileInfoPrefixLen{};
 };
 
 

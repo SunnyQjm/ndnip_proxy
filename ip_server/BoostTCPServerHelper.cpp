@@ -4,21 +4,9 @@
 #include "BoostTCPServerHelper.h"
 #include "FileUtils.h"
 #include "MutexHelper.h"
-#include "ResourceManagerFactory.h"
+#include "resource_manager.h"
 
-namespace mingj {
-    namespace factory {
-        template<>
-        ResourceManagerFactory<boost::filesystem::fstream>::ResourceManagerFactory(boost::filesystem::fstream &t)
-                :
-                t(t), closeCallback([](boost::filesystem::fstream &fs) {
-            fs.close();
-        }) {
-        }
-    }
-}
-
-using namespace mingj::factory;
+using namespace mingj::manager;
 
 BoostTCPServerHelper::BoostTCPServerHelper(unsigned short port, unsigned int buffer_size) :
         port(port),
@@ -76,7 +64,7 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
 
             boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
             {
-                ResourceManagerFactory<boost::filesystem::fstream> rmf(fs);         //将fs放进资源管理对象中，自动关闭
+                ResourceManager<boost::filesystem::fstream> rmf(fs);         //将fs放进资源管理对象中，自动关闭
                 if (fs.is_open()) {      //打开文件成功
                     try {
                         // 处理传输整个文件
@@ -152,6 +140,7 @@ void BoostTCPServerHelper::easySuccess(ip::tcp::socket *sock, const string &msg,
 }
 
 void BoostTCPServerHelper::close(ip::tcp::socket *sockPtr) {
+    cout << "close sockPtr" << endl;
     if (nullptr != sockPtr) {
         sockPtr->close();
         delete sockPtr;

@@ -11,8 +11,8 @@ const string NdnIPProxyHelper::FILE_INFO_PREFIX = "fileInfoPrefix";
 
 NdnIPProxyHelper *NdnIPProxyHelper::getInstance() {
     static NdnIPProxyHelper *instance = nullptr;
-    static boost::shared_mutex mutex;
     if (instance == nullptr) {
+        static boost::shared_mutex mutex;
         boost::shared_lock<boost::shared_mutex> m(mutex);
         if (instance == nullptr) {
             instance = new NdnIPProxyHelper();
