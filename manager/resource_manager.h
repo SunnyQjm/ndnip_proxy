@@ -13,7 +13,8 @@
 namespace mingj {
     namespace manager {
 
-# if defined(BOOST_FILESYSTEM3_FSTREAM_HPP)
+#if defined(BOOST_FILESYSTEM3_FSTREAM_HPP)
+
         /**
          * 针对 boost::filesystem::fstream 的特化版本
          */
@@ -24,6 +25,22 @@ namespace mingj {
             fs.close();
         }) {
         }
+
+#endif
+
+#if defined(BOOST_ASIO_IP_TCP_HPP)
+
+        template<>
+        PtrResourceManager<boost::asio::ip::tcp::socket>::PtrResourceManager(boost::asio::ip::tcp::socket *ptr)
+                :
+                ptr(ptr), closeCallback([](boost::asio::ip::tcp::socket *socketPtr) {
+            if (nullptr != socketPtr) {
+                socketPtr->close();
+                delete socketPtr;
+            }
+        }) {
+        }
+
 #endif
     }
 }

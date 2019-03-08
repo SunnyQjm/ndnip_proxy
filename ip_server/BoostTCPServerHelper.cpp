@@ -20,11 +20,10 @@ void BoostTCPServerHelper::startListen() {
         auto *sockPtr = new ip::tcp::socket(service);
         acceptor.accept(*sockPtr);
         boost::thread thread([=]() {
+            PtrResourceManager<ip::tcp::socket> prm(sockPtr);
             try {
                 this->deal(sockPtr);
-                close(sockPtr);
             } catch (exception &e) {
-                close(sockPtr);
                 cerr << e.what() << endl;
             }
         });
@@ -128,7 +127,6 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
 void BoostTCPServerHelper::easyErr(ip::tcp::socket *sock, int code) {
     ResponseBody responseBody(code, mingj::protocol::error_code::codeToErrMsg(code));
     sendStr(sock, responseBody.toJson());
-    close(sock);
 }
 
 void BoostTCPServerHelper::easySuccess(ip::tcp::socket *sock, const string &msg, size_t fileSize,
@@ -139,11 +137,4 @@ void BoostTCPServerHelper::easySuccess(ip::tcp::socket *sock, const string &msg,
     sendStr(sock, responseBody.toJson());
 }
 
-void BoostTCPServerHelper::close(ip::tcp::socket *sockPtr) {
-    cout << "close sockPtr" << endl;
-    if (nullptr != sockPtr) {
-        sockPtr->close();
-        delete sockPtr;
-    }
-}
 

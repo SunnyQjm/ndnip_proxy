@@ -23,8 +23,6 @@ public:
 
     void deal(ip::tcp::socket *sockPtr);
 
-    void close(ip::tcp::socket *sockPtr);
-
 private:
     io_service service;
     unsigned short port;

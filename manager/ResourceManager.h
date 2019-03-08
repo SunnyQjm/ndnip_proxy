@@ -46,6 +46,43 @@ namespace mingj {
         }) {
         }
 
+
+        template <class T>
+        class PtrResourceManager {
+
+        public:
+
+            explicit PtrResourceManager(T *ptr, std::function<void(T *)> closeCallback);
+
+            explicit PtrResourceManager(T *ptr);
+
+            ~PtrResourceManager();
+
+        private:
+            T *ptr;
+            std::function<void(T *ptr)> closeCallback;
+        };
+
+        template<class T>
+        PtrResourceManager<T>::PtrResourceManager(T *ptr, std::function<void(T *)> closeCallback):
+                ptr(ptr), closeCallback(closeCallback) {
+        }
+
+        template<class T>
+        PtrResourceManager<T>::~PtrResourceManager() {
+            try {
+                closeCallback(ptr);
+            } catch (std::exception &e) {       //吞掉异常
+                std::cerr << e.what() << std::endl;
+            }
+        }
+
+        template<class T>
+        PtrResourceManager<T>::PtrResourceManager(T *ptr):ptr(ptr), closeCallback([]() {
+
+        }) {
+        }
+
     }
 }
 
