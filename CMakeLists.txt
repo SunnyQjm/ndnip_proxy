@@ -38,11 +38,11 @@ target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem json
 #target_link_libraries(test_fcw boost_system boost_filesystem jsoncpp pthread)
 #target_link_libraries(ndnip_proxy pcap ndn-cxx boost_system boost_thread jsoncpp pthread)
 
-add_executable(test_boost_timer test/test_boost_timer.cpp )
-target_link_libraries(test_boost_timer boost_system)
-
-add_executable(test_rmf test/test_rmf.cpp manager/ResourceManager.cpp utils/FileUtils.cpp)
-target_link_libraries(test_rmf boost_system boost_filesystem)
-
-add_executable(test_slide_window test/test_slide_window.cpp manager/SequenceManager.cpp utils/MutexHelper.cpp)
-target_link_libraries(test_slide_window boost_system boost_filesystem boost_thread)
+#add_executable(test_boost_timer test/test_boost_timer.cpp )
+#target_link_libraries(test_boost_timer boost_system)
+#
+#add_executable(test_rmf test/test_rmf.cpp manager/ResourceManager.cpp utils/FileUtils.cpp)
+#target_link_libraries(test_rmf boost_system boost_filesystem)
+#
+#add_executable(test_slide_window test/test_slide_window.cpp manager/SequenceManager.cpp utils/MutexHelper.cpp)
+#target_link_libraries(test_slide_window boost_system boost_filesystem boost_thread)
