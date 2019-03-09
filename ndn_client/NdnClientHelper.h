@@ -39,6 +39,10 @@ public:
 
     void onTimeout(const Interest &interest);
 
+    void onSliceTimeout(const Interest &interest, const string &basePrefix, int sequence, size_t chunkSize,
+                        size_t totalCount,
+                        boost::filesystem::path outputPath);
+
     void getFileInfoOnData(const Interest &interest,
                            const Data &data, const string &ip, unsigned short port, const string &fileName);
 
