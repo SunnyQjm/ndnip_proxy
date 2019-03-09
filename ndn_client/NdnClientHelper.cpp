@@ -119,7 +119,7 @@ void NdnClientHelper::getFileInfoOnData(const Interest &interest, const Data &da
 
 void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, int position, int totalCount,
                                     const string &basePrefix, int chunkSize, boost::filesystem::path outputPath) {
-
+    receiveSliceCount++;
     getInstance()->threadPool.enqueue([=]{
         sequenceManager.ackSequence(static_cast<size_t>(position));
 
@@ -140,7 +140,7 @@ void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, 
                                 std::ios_base::in);
 
         }
-        if (position == totalCount - 1) {
+        if (receiveSliceCount == totalCount) {
             os.flush();
             os.close();
 

@@ -69,6 +69,7 @@ private:
     mingj::manager::SequenceManager sequenceManager;
     ThreadPool threadPool;
     boost::filesystem::fstream os;
+    size_t receiveSliceCount = 0;
     //config
     string fileSlicePrefix;
     size_t fileSlicePrefixLen{};
