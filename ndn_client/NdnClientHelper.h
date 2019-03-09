@@ -58,7 +58,7 @@ public:
 
 private:
 
-    NdnClientHelper() = default;
+    NdnClientHelper() : sequenceManager(0, 15) {};
 
     static const string FILE_SLICE_PREFIX;
     static const string FILE_INFO_PREFIX;
