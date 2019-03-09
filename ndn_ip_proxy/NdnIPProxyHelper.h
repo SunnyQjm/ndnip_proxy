@@ -10,6 +10,7 @@
 #include "NDNHelper.h"
 #include "BoostTCPClientHelper.h"
 #include <boost/thread/pthread/shared_mutex.hpp>
+#include "ThreadPool.h"
 
 using namespace std;
 
@@ -51,8 +52,10 @@ public:
     const string getBaseFileSlicePrefix(const string &ip, unsigned short port, const string &fileName);
 
 private:
-    NdnIPProxyHelper() = default;
+    explicit NdnIPProxyHelper(size_t threadPoolSize = 10) : threadPool(threadPoolSize) {}
+
     NDNHelper *pNdnHelper = nullptr;
+    ThreadPool threadPool;
     static const string FILE_SLICE_PREFIX;
     static const string FILE_INFO_PREFIX;
     string fileSlicePrefix;

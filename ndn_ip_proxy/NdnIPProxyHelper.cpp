@@ -5,7 +5,6 @@
 #include "NdnIPProxyHelper.h"
 #include "JSONCPPHelper.h"
 
-
 const string NdnIPProxyHelper::FILE_SLICE_PREFIX = "fileSlicePrefix";
 const string NdnIPProxyHelper::FILE_INFO_PREFIX = "fileInfoPrefix";
 
@@ -83,22 +82,22 @@ void NdnIPProxyHelper::onRegisterFailed(const Name &prefix) {
 
 void
 NdnIPProxyHelper::onFileSliceInterest(const InterestFilter &filter, const Interest &interest, NDNHelper *ndnHelper) {
-    string interestName = interest.getName().toUri();
-    cout << "onInterest: " << interestName << endl;
+    getInstance()->threadPool.enqueue([=]() {
+        string interestName = interest.getName().toUri();
+        cout << "onInterest: " << interestName << endl;
 
-    vector<string> fileds;
-    boost::split(fileds, interestName, boost::is_any_of("/"));
+        vector<string> fileds;
+        boost::split(fileds, interestName, boost::is_any_of("/"));
 
-    size_t prefixLen = NdnIPProxyHelper::getInstance()->getFileSlicePrefixLen();
-    if (fileds.size() != (prefixLen + 4)) {
-        return;
-    }
-    string ip = fileds[prefixLen];
-    auto port = static_cast<unsigned short>(atoi(fileds[prefixLen + 1].c_str()));
+        size_t prefixLen = NdnIPProxyHelper::getInstance()->getFileSlicePrefixLen();
+        if (fileds.size() != (prefixLen + 4)) {
+            return;
+        }
+        string ip = fileds[prefixLen];
+        auto port = static_cast<unsigned short>(atoi(fileds[prefixLen + 1].c_str()));
 
-    string fileName = fileds[prefixLen + 2];
-    int sliceNum = atoi(fileds[prefixLen + 3].c_str());
-    boost::thread t([=]() {
+        string fileName = fileds[prefixLen + 2];
+        int sliceNum = atoi(fileds[prefixLen + 3].c_str());
         BoostTCPClientHelper boostTCPClientHelper(ip, port);
         boostTCPClientHelper.connect();
         boostTCPClientHelper.getFileSliceFromServer(fileName, sliceNum,
@@ -112,23 +111,23 @@ NdnIPProxyHelper::onFileSliceInterest(const InterestFilter &filter, const Intere
 
 void
 NdnIPProxyHelper::onFileInfoInterest(const InterestFilter &filter, const Interest &interest, NDNHelper *ndnHelper) {
-    string interestName = interest.getName().toUri();
-    cout << "onInterest: " << interestName << endl;
+    getInstance()->threadPool.enqueue([=] {
+        string interestName = interest.getName().toUri();
+        cout << "onInterest: " << interestName << endl;
 
-    vector<string> fileds;
-    boost::split(fileds, interestName, boost::is_any_of("/"));
+        vector<string> fileds;
+        boost::split(fileds, interestName, boost::is_any_of("/"));
 
-    size_t prefixLen = NdnIPProxyHelper::getInstance()->getFileInfoPrefixLen();
-    if (fileds.size() != (prefixLen + 4)) {
-        return;
-    }
-    string ip = fileds[prefixLen];
-    auto port = static_cast<unsigned short>(atoi(fileds[prefixLen + 1].c_str()));
+        size_t prefixLen = NdnIPProxyHelper::getInstance()->getFileInfoPrefixLen();
+        if (fileds.size() != (prefixLen + 4)) {
+            return;
+        }
+        string ip = fileds[prefixLen];
+        auto port = static_cast<unsigned short>(atoi(fileds[prefixLen + 1].c_str()));
 
-    string fileName = fileds[prefixLen + 2];
-    int challenge = atoi(fileds[prefixLen + 3].c_str());
+        string fileName = fileds[prefixLen + 2];
+        int challenge = atoi(fileds[prefixLen + 3].c_str());
 
-    boost::thread t([=]() {
         BoostTCPClientHelper boostTCPClientHelper(ip, port);
         boostTCPClientHelper.connect();
         string basePrefix = NdnIPProxyHelper::getInstance()->getBaseFileSlicePrefix(ip, port, fileName);
@@ -138,14 +137,6 @@ NdnIPProxyHelper::onFileInfoInterest(const InterestFilter &filter, const Interes
             string json = responseBody.toJson();
             ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
         });
-//        boostTCPClientHelper.getFileFromServerAndBeginTrans(fileName, [=, &ndnHelper](
-//                ResponseBody &responseBody) {   //请求文件返回结果
-//            string json = responseBody.toJson();
-//            ndnHelper->putData(interestName, (uint8_t *) json.c_str(), json.size());
-//        }, [=, &ndnHelper](uint8_t *buf, size_t bytes,
-//                           int count) {        //如果文件存在，则IP主机会返回文件流，传输的每一段文件，都会调用这个回调
-//            ndnHelper->putData(basePrefix + to_string(count), buf, bytes);
-//        });
     });
 }
 

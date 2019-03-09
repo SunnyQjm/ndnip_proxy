@@ -8,6 +8,7 @@
 #include "NDNHelper.h"
 #include <FileUtils.h>
 #include "SequenceManager.h"
+#include "ThreadPool.h"
 
 using namespace std;
 
@@ -58,15 +59,16 @@ public:
 
 private:
 
-    NdnClientHelper() : sequenceManager(0, 15) {};
+    NdnClientHelper(size_t windowSize = 20, size_t threadPoolSize = 10)
+            : sequenceManager(0, windowSize), threadPool(threadPoolSize) {};
 
     static const string FILE_SLICE_PREFIX;
     static const string FILE_INFO_PREFIX;
     static const string IS_PREVIEW;
     NDNHelper ndnHelper;
     mingj::manager::SequenceManager sequenceManager;
+    ThreadPool threadPool;
     boost::filesystem::fstream os;
-
     //config
     string fileSlicePrefix;
     size_t fileSlicePrefixLen{};

@@ -82,85 +82,88 @@ void NdnClientHelper::onSliceTimeout(const Interest &interest, const string &bas
 
 void NdnClientHelper::getFileInfoOnData(const Interest &interest, const Data &data, const string &ip,
                                         unsigned short port, const string &fileName) {
-    const auto &content = data.getContent();
-    string json((char *) content.value(), content.value_size());
-    ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(json);
-    cout << responseBody.toJson() << endl;
+    getInstance()->threadPool.enqueue([=]{
+        const auto &content = data.getContent();
+        string json((char *) content.value(), content.value_size());
+        ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(json);
+        cout << responseBody.toJson() << endl;
 
-    //////////////////////////////////////////
-    /////// 下面获取所有的文件块，并写到文件当中
-    //////////////////////////////////////////
+        //////////////////////////////////////////
+        /////// 下面获取所有的文件块，并写到文件当中
+        //////////////////////////////////////////
 
-    auto outputPath = FileUtils::getOutputPath();
+        auto outputPath = FileUtils::getOutputPath();
 
-    outputPath.append(fileName);
+        outputPath.append(fileName);
 
-    //如果不存在就创建文件
-    FileUtils::createFileIfNotExist(outputPath);
+        //如果不存在就创建文件
+        FileUtils::createFileIfNotExist(outputPath);
 
 
-    this->os.open(outputPath, std::ios_base::binary | std::ios_base::out | std::ios_base::in);
-    int count = (int) (responseBody.fileSize / responseBody.chunkSize) + 1;
-    string basePrefix = this->getBaseFileSlicePrefix(ip, port, fileName);
-    ssize_t sequence;
-    while ((sequence = this->sequenceManager.getNextSequence()) != -1) {
-        ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
-                                  std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
-                                            std::placeholders::_2, sequence, count, basePrefix, responseBody.chunkSize,
-                                            outputPath),
-                                  std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
-                                            std::placeholders::_2),
-                                  std::bind(&NdnClientHelper::onSliceTimeout, this, std::placeholders::_1, basePrefix,
-                                            sequence, responseBody.chunkSize, count, outputPath));
-    }
+        this->os.open(outputPath, std::ios_base::binary | std::ios_base::out | std::ios_base::in);
+        int count = (int) (responseBody.fileSize / responseBody.chunkSize) + 1;
+        string basePrefix = this->getBaseFileSlicePrefix(ip, port, fileName);
+        ssize_t sequence;
+        while ((sequence = this->sequenceManager.getNextSequence()) != -1) {
+            ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
+                                      std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
+                                                std::placeholders::_2, sequence, count, basePrefix, responseBody.chunkSize,
+                                                outputPath),
+                                      std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
+                                                std::placeholders::_2),
+                                      std::bind(&NdnClientHelper::onSliceTimeout, this, std::placeholders::_1, basePrefix,
+                                                sequence, responseBody.chunkSize, count, outputPath));
+        }
+    });
 }
 
 void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, int position, int totalCount,
                                     const string &basePrefix, int chunkSize, boost::filesystem::path outputPath) {
 
-//    cout << "onData: " << interest.getName().toUri() << endl;
+    getInstance()->threadPool.enqueue([=]{
+        sequenceManager.ackSequence(static_cast<size_t>(position));
 
-    sequenceManager.ackSequence(static_cast<size_t>(position));
+        static bool preview = false;
+        // 偏移到指定位置
+        os.seekp(position * chunkSize, std::ios::beg);
+        // 将数据写入到文件当中
+        os.write((char *) data.getContent().value(),
+                 data.getContent().value_size());
+        if (isPreview && !preview && (position > 1000 || 2 * position > totalCount)) {
+            preview = true;
+            os.close();
+            cout << outputPath.string() << endl;
+            boost::thread t([=]() {
+                OnlinePreviewer().preview(outputPath.string());
+            });
+            os.open(outputPath, std::ios_base::binary | std::ios_base::out |
+                                std::ios_base::in);
 
-    static bool preview = false;
-    // 偏移到指定位置
-    os.seekp(position * chunkSize, std::ios::beg);
-    // 将数据写入到文件当中
-    os.write((char *) data.getContent().value(),
-             data.getContent().value_size());
-    if (isPreview && !preview && (position > 1000 || 2 * position > totalCount)) {
-        preview = true;
-        os.close();
-        cout << outputPath.string() << endl;
-        boost::thread t([=]() {
-            OnlinePreviewer().preview(outputPath.string());
-        });
-        os.open(outputPath, std::ios_base::binary | std::ios_base::out |
-                            std::ios_base::in);
-
-    }
-    if (position == totalCount - 1) {
-        os.flush();
-        os.close();
-
-        cout << "end: " << TimeUtils::getCurTime() << endl;
-
-        //手动退出
-        exit(0);
-    } else {
-        ssize_t sequence;
-        while ((sequence = this->sequenceManager.getNextSequence()) != -1) {
-            ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
-                                      std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
-                                                std::placeholders::_2, sequence, totalCount, basePrefix,
-                                                chunkSize,
-                                                outputPath),
-                                      std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
-                                                std::placeholders::_2),
-                                      std::bind(&NdnClientHelper::onSliceTimeout, this, std::placeholders::_1, basePrefix,
-                                                sequence, chunkSize, totalCount, outputPath));
         }
-    }
+        if (position == totalCount - 1) {
+            os.flush();
+            os.close();
+
+            cout << "end: " << TimeUtils::getCurTime() << endl;
+
+            //手动退出
+            exit(0);
+        } else {
+            ssize_t sequence;
+            while ((sequence = this->sequenceManager.getNextSequence()) != -1 && sequence < totalCount) {
+                ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
+                                          std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
+                                                    std::placeholders::_2, sequence, totalCount, basePrefix,
+                                                    chunkSize,
+                                                    outputPath),
+                                          std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
+                                                    std::placeholders::_2),
+                                          std::bind(&NdnClientHelper::onSliceTimeout, this, std::placeholders::_1, basePrefix,
+                                                    sequence, chunkSize, totalCount, outputPath));
+            }
+        }
+    });
+
 }
 
 const string NdnClientHelper::getBaseFileInfoPrefix(const string &ip, unsigned short port, const string &fileName) {
