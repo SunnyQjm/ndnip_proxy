@@ -52,7 +52,7 @@ public:
     const string getBaseFileSlicePrefix(const string &ip, unsigned short port, const string &fileName);
 
 private:
-    explicit NdnIPProxyHelper(size_t threadPoolSize = 10) : threadPool(threadPoolSize) {}
+    explicit NdnIPProxyHelper(size_t threadPoolSize = 20) : threadPool(threadPoolSize) {}
 
     NDNHelper *pNdnHelper = nullptr;
     ThreadPool threadPool;
