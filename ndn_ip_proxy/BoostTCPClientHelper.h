@@ -35,9 +35,6 @@ public:
     void getFileSliceFromServer(const std::string& fileName, int sliceNum, function<void(ResponseBody &)> onResponse,
                                 function<void(uint8_t *, size_t)> callback);
 
-    void testBlockChainRequest();
-
-    void asyncVisitBuf(function<void()> callback, boost::shared_mutex& mutex);
 private:
     io_service service;
     ip::tcp::endpoint ep;

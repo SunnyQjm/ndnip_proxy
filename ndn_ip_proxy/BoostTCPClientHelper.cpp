@@ -4,6 +4,7 @@
 
 #include "BoostTCPClientHelper.h"
 #include "FileUtils.h"
+#include "MutexHelper.h"
 
 BoostTCPClientHelper::BoostTCPClientHelper(const std::string &ip, unsigned short port, size_t buffer_size) :
         ep(ip::address_v4::from_string(ip), port), buffer_size(buffer_size) {
@@ -40,9 +41,9 @@ void BoostTCPClientHelper::getFileFromServerAndBeginTrans(const std::string &fil
     cout << "request: " << requestBody.toJson() << endl;
 
     string responseJson;
-    this->asyncVisitBuf([=, &responseJson] {
+    MutexHelper<void>::shareModify(this->strBufMutex, [=, &responseJson] {
         responseJson = readStr(sock, this->strBuf, this->buffer_size);
-    }, this->strBufMutex);
+    });
 
     cout << "response: " << responseJson << endl;
 
@@ -59,13 +60,13 @@ void BoostTCPClientHelper::getFileFromServerAndBeginTrans(const std::string &fil
         int totalSize = responseBody.fileSize;
         int count = 0;
         while (totalSize > 0) {
-            this->asyncVisitBuf([=, &count, &totalSize, &total] {
+            MutexHelper<void>::shareModify(this->bufMutex, [=, &count, &totalSize, &total] {
                 size_t bytes = readn(sock, this->buf,
                                      totalSize > responseBody.chunkSize ? responseBody.chunkSize : totalSize);
                 callback((uint8_t *) this->buf, bytes, count++);
                 totalSize -= bytes;
                 total += bytes;
-            }, this->bufMutex);
+            });
         }
         sock->close();
     } else {
@@ -86,9 +87,9 @@ BoostTCPClientHelper::getFileSliceFromServer(const std::string &fileName, int sl
     // 发送传输文件请求
     sendStr(sock, requestBody.toJson());
     string responseJson;
-    this->asyncVisitBuf([=, &responseJson] {
+    MutexHelper<void>::shareModify(this->strBufMutex, [=, &responseJson] {
         responseJson = readStr(sock, this->strBuf, this->buffer_size);
-    }, this->strBufMutex);
+    });
 
     ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(responseJson);
 
@@ -98,11 +99,10 @@ BoostTCPClientHelper::getFileSliceFromServer(const std::string &fileName, int sl
         // 发送给服务器，让服务器开始传文件
         sendStr(sock, "\n");
 
-        this->asyncVisitBuf([=] {
+        MutexHelper<void>::shareModify(this->sliceBufMutex, [=] {
             size_t bytes = readn(sock, this->sliceBuf, responseBody.chunkSize);
             callback((uint8_t *) this->sliceBuf, bytes);
-        }, this->sliceBufMutex);
-
+        });
         sock->close();
     } else {
         cerr << "请求失败： " << responseBody.data << endl;
@@ -118,23 +118,13 @@ BoostTCPClientHelper::getFileInfoFromServer(const std::string &fileName, functio
 
     // 接收回复
     string responseJson;
-    this->asyncVisitBuf([=, &responseJson] {
+    MutexHelper<void>::shareModify(this->strBufMutex, [=, &responseJson] {
         responseJson = readStr(sock, this->strBuf, this->buffer_size);
-    }, this->strBufMutex);
+    });
     ResponseBody responseBody = ProtocolHelper::jsonToResponseBody(responseJson);
     onResponse(responseBody);
     sendStr(sock, "\n");
     close();
-}
-
-void BoostTCPClientHelper::testBlockChainRequest() {
-    RequestBody requestBody(0, "wtf?");
-    sendStr(sock, requestBody.toJson());
-}
-
-void BoostTCPClientHelper::asyncVisitBuf(function<void()> callback, boost::shared_mutex &mutex) {
-    boost::shared_lock<boost::shared_mutex> m(mutex);
-    callback();
 }
 
 void BoostTCPClientHelper::close() {

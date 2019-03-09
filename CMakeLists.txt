@@ -14,7 +14,7 @@ include_directories(manager)
 
 add_executable(nip ndn_ip_proxy/ndn_ip_proxy.cpp ndn_ip_proxy/BoostTCPClientHelper.cpp utils/FileUtils.cpp
         utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp protocol/BaseProtocolItem.cpp common/common.cpp
-        protocol/protocol.cpp utils/NDNHelper.cpp ndn_ip_proxy/NdnIPProxyHelper.cpp)
+        protocol/protocol.cpp utils/NDNHelper.cpp ndn_ip_proxy/NdnIPProxyHelper.cpp utils/MutexHelper.cpp)
 target_link_libraries(nip ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 add_executable(is ip_server/ip_server.cpp utils/FileUtils.cpp utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp
