@@ -102,7 +102,10 @@ void NdnClientHelper::getFileInfoOnData(const Interest &interest, const Data &da
 void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, int position, int totalCount,
                                     const string &basePrefix, int chunkSize, boost::filesystem::path outputPath) {
 
+    cout << "onData: " << interest.getName().toUri() << endl;
+
     sequenceManager.ackSequence(static_cast<size_t>(position));
+
     static bool preview = false;
     // 偏移到指定位置
     os.seekp(position * chunkSize, std::ios::beg);
