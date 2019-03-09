@@ -19,7 +19,7 @@ void NDNHelper::expressInterest(const string &name, ON_DATA_CALLBACK onData, NAC
                                 TIMEOUT_CALLBACK timeout_callback) {
     Interest interest(name);
     interest.setCanBePrefix(true);
-    interest.setInterestLifetime(4_s);    //兴趣报存活时间
+    interest.setInterestLifetime(2_s);    //兴趣报存活时间
     this->face.expressInterest(interest, onData, nack, timeout_callback);
 }
 
