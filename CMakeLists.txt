@@ -19,14 +19,14 @@ target_link_libraries(nip ndn-cxx boost_system boost_thread boost_filesystem jso
 
 add_executable(is ip_server/ip_server.cpp utils/FileUtils.cpp utils/JSONCPPHelper.cpp protocol/ProtocolHelper.cpp
         protocol/BaseProtocolItem.cpp common/common.cpp utils/MutexHelper.cpp manager/ResourceManager.cpp
-        protocol/protocol.cpp ip_server/BoostTCPServerHelper.cpp manager/SequenceManager.cpp manager/SequenceManager.h)
+        protocol/protocol.cpp ip_server/BoostTCPServerHelper.cpp )
 
 target_link_libraries(is boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 
 add_executable(nc ndn_client/ndn_client.cpp utils/NDNHelper.cpp utils/JSONCPPHelper.cpp protocol/BaseProtocolItem.cpp
         protocol/ProtocolHelper.cpp utils/FileUtils.cpp utils/Previewer.cpp utils/OnlinePreviewer.cpp
-        ndn_client/NdnClientHelper.cpp utils/UUIDUtils.cpp)
+        ndn_client/NdnClientHelper.cpp utils/UUIDUtils.cpp manager/SequenceManager.cpp utils/TimeUtils.cpp )
 target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem jsoncpp pthread)
 
 
@@ -38,8 +38,11 @@ target_link_libraries(nc ndn-cxx boost_system boost_thread boost_filesystem json
 #target_link_libraries(test_fcw boost_system boost_filesystem jsoncpp pthread)
 #target_link_libraries(ndnip_proxy pcap ndn-cxx boost_system boost_thread jsoncpp pthread)
 
-add_executable(test_boost_timer test/test_boost_timer.cpp)
+add_executable(test_boost_timer test/test_boost_timer.cpp )
 target_link_libraries(test_boost_timer boost_system)
 
 add_executable(test_rmf test/test_rmf.cpp manager/ResourceManager.cpp utils/FileUtils.cpp)
 target_link_libraries(test_rmf boost_system boost_filesystem)
+
+add_executable(test_slide_window test/test_slide_window.cpp manager/SequenceManager.cpp utils/MutexHelper.cpp)
+target_link_libraries(test_slide_window boost_system boost_filesystem boost_thread)

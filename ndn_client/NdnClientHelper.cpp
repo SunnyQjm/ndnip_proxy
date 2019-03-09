@@ -10,7 +10,7 @@
 #include "UUIDUtils.h"
 #include "NdnClientHelper.h"
 #include <boost/thread.hpp>
-
+#include "TimeUtils.h"
 
 const string NdnClientHelper::FILE_SLICE_PREFIX = "fileSlicePrefix";
 const string NdnClientHelper::FILE_INFO_PREFIX = "fileInfoPrefix";
@@ -47,6 +47,7 @@ NdnClientHelper *NdnClientHelper::updateConfig(const string &configPath) {
 }
 
 NdnClientHelper *NdnClientHelper::getFile(const string &ip, unsigned short port, const string &fileName) {
+    cout << "start: " << TimeUtils::getCurTime() << endl;
     ndnHelper.expressInterest(
             this->getBaseFileInfoPrefix(ip, port, fileName) + "/" + UUIDUtils::generateUUid(),
             std::bind(&NdnClientHelper::getFileInfoOnData, this, std::placeholders::_1, std::placeholders::_2,
@@ -86,16 +87,22 @@ void NdnClientHelper::getFileInfoOnData(const Interest &interest, const Data &da
     this->os.open(outputPath, std::ios_base::binary | std::ios_base::out | std::ios_base::in);
     int count = (int) (responseBody.fileSize / responseBody.chunkSize) + 1;
     string basePrefix = this->getBaseFileSlicePrefix(ip, port, fileName);
-    ndnHelper.expressInterest(basePrefix + "/" + to_string(0),
-                              std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
-                                        std::placeholders::_2, 0, count, basePrefix, responseBody.chunkSize,
-                                        outputPath),
-                              std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1, std::placeholders::_2),
-                              std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
+    ssize_t sequence;
+    while ((sequence = this->sequenceManager.getNextSequence()) != -1) {
+        ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
+                                  std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
+                                            std::placeholders::_2, sequence, count, basePrefix, responseBody.chunkSize,
+                                            outputPath),
+                                  std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
+                                            std::placeholders::_2),
+                                  std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
+    }
 }
 
 void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, int position, int totalCount,
-                                    const string& basePrefix, int chunkSize, boost::filesystem::path outputPath) {
+                                    const string &basePrefix, int chunkSize, boost::filesystem::path outputPath) {
+
+    sequenceManager.ackSequence(static_cast<size_t>(position));
     static bool preview = false;
     // 偏移到指定位置
     os.seekp(position * chunkSize, std::ios::beg);
@@ -117,16 +124,35 @@ void NdnClientHelper::getFileOnData(const Interest &interest, const Data &data, 
         os.flush();
         os.close();
 
+        cout << "end: " << TimeUtils::getCurTime() << endl;
+
         //手动退出
         exit(0);
     } else {
-        ndnHelper.expressInterest(basePrefix + "/" + to_string(position + 1),
-                                  std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
-                                            std::placeholders::_2, position + 1, totalCount, basePrefix, chunkSize,
-                                            outputPath),
-                                  std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
-                                            std::placeholders::_2),
-                                  std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
+        ssize_t sequence;
+        while ((sequence = this->sequenceManager.getNextSequence()) != -1) {
+            ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
+                                      std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
+                                                std::placeholders::_2, sequence, totalCount, basePrefix,
+                                                chunkSize,
+                                                outputPath),
+                                      std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
+                                                std::placeholders::_2),
+                                      std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
+//            ndnHelper.expressInterest(basePrefix + "/" + to_string(sequence),
+//                                      std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
+//                                                std::placeholders::_2, sequence, count, basePrefix, chunkSize,
+//                                                outputPath),
+//                                      std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1, std::placeholders::_2),
+//                                      std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
+        }
+//        ndnHelper.expressInterest(basePrefix + "/" + to_string(position + 1),
+//                                  std::bind(&NdnClientHelper::getFileOnData, this, std::placeholders::_1,
+//                                            std::placeholders::_2, position + 1, totalCount, basePrefix, chunkSize,
+//                                            outputPath),
+//                                  std::bind(&NdnClientHelper::onNack, this, std::placeholders::_1,
+//                                            std::placeholders::_2),
+//                                  std::bind(&NdnClientHelper::onTimeout, this, std::placeholders::_1));
     }
 }
 

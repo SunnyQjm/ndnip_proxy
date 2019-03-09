@@ -34,7 +34,7 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
 
     // 首先传递过来的是请求数据，根据请求，选择合适的文件进行传输
     std::string request;
-    MutexHelper::shareModify(this->strBufMutex, [=, &request] {
+    MutexHelper<void>::shareModify(this->strBufMutex, [=, &request] {
         request = readStr(sockPtr, this->strBuf, this->buffer_size);
     });
 
@@ -59,6 +59,12 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                 return;
             }
 
+            if(requestBody.code == ProtocolHelper::REQUEST_CODE_FILE_SLICE &&
+                    requestBody.sliceNum * chunkSize > fileSize) {
+                easyErr(sockPtr, mingj::protocol::error_code::ERR_READ_END_OF_FILE);
+                return;
+            }
+
             // 将fs交给资源管理对象，在资源管理对象的析构函数中会自动执行close
 
             boost::filesystem::fstream fs(filePath, std::ios_base::binary | std::ios_base::in);
@@ -71,13 +77,13 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                             easySuccess(sockPtr, "success", static_cast<int>(fileSize), chunkSize);
 
                             // 等待客户端写一行数据，标示可以开始传输文件
-                            MutexHelper::shareModify(this->strBufMutex, [=] {
+                            MutexHelper<void>::shareModify(this->strBufMutex, [=] {
                                 readLine(sockPtr, this->strBuf, this->buffer_size);
                             });
 
                             int total = 0;
                             while (!fs.eof()) {              //读文件
-                                MutexHelper::shareModify(this->bufMutex, [=, &fs, &total] {
+                                MutexHelper<void>::shareModify(this->bufMutex, [=, &fs, &total] {
                                     fs.read(buf, chunkSize);
                                     auto count = fs.gcount();
                                     size_t sendBytes = writen(sockPtr, this->buf, static_cast<size_t>(count));
@@ -91,12 +97,12 @@ void BoostTCPServerHelper::deal(ip::tcp::socket *sockPtr) {
                             easySuccess(sockPtr, "success", static_cast<int>(fileSize),
                                         static_cast<unsigned int>(sliceSize));
                             // 等待客户端写一行数据，标示可以开始传输文件
-                            MutexHelper::shareModify(this->strBufMutex, [=] {
+                            MutexHelper<void>::shareModify(this->strBufMutex, [=] {
                                 readLine(sockPtr, this->strBuf, this->buffer_size);
                             });
 
                             fs.seekg(chunkSize * requestBody.sliceNum, std::ios_base::beg);
-                            MutexHelper::shareModify(this->sliceBufMutex, [=, &fs] {
+                            MutexHelper<void>::shareModify(this->sliceBufMutex, [=, &fs] {
                                 fs.read(this->sliceBuf, chunkSize);
                                 auto count = fs.gcount();
                                 writen(sockPtr, this->sliceBuf, static_cast<size_t>(count));

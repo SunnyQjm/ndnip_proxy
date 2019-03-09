@@ -7,6 +7,7 @@
 
 #include "NDNHelper.h"
 #include <FileUtils.h>
+#include "SequenceManager.h"
 
 using namespace std;
 
@@ -59,6 +60,7 @@ private:
     static const string FILE_INFO_PREFIX;
     static const string IS_PREVIEW;
     NDNHelper ndnHelper;
+    mingj::manager::SequenceManager sequenceManager;
     boost::filesystem::fstream os;
 
     //config
