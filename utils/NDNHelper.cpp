@@ -11,6 +11,7 @@
 #include "JSONCPPHelper.h"
 #include "NDNHelper.h"
 
+using namespace std;
 NDNHelper::NDNHelper(const string &connectUrl) : face(connectUrl) {
 
 }
