@@ -10,7 +10,7 @@
 #include <ndn-cxx/security/key-chain.hpp>
 #include "JSONCPPHelper.h"
 #include "NDNHelper.h"
-
+#include <iostream>
 using namespace std;
 NDNHelper::NDNHelper(const string &connectUrl) : face(connectUrl) {
 
