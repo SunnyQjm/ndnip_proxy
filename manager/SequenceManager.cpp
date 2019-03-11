@@ -5,6 +5,7 @@
 #include "SequenceManager.h"
 #include "MutexHelper.h"
 #include <functional>
+#include <iostream>
 
 namespace mingj {
     namespace manager {
