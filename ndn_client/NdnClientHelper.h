@@ -59,7 +59,7 @@ public:
 
 private:
 
-    NdnClientHelper(size_t windowSize = 10, size_t threadPoolSize = 10)
+    NdnClientHelper(size_t windowSize = 5, size_t threadPoolSize = 10)
             : sequenceManager(0, windowSize), threadPool(threadPoolSize) {};
 
     static const string FILE_SLICE_PREFIX;
